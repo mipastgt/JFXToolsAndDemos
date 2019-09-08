@@ -34,6 +34,12 @@ public class VLCJFXVideoPlayerDemo1 extends Application {
     private ImageView videoImageView;
 
     @Override
+    public void init() {
+        System.out.println("java.runtime.version: " + System.getProperty("java.runtime.version", "(undefined)"));
+        System.out.println("javafx.runtime.version: " + System.getProperty("javafx.runtime.version", "(undefined)"));
+    }
+    
+    @Override
     public void start(Stage primaryStage) throws Exception {
         videoPlayer = new VLCJFXVideoPlayer();
         
