@@ -2,7 +2,17 @@
 
 A collection of tools and demos for JavaFX.
 
-## VLCJFXVideoPlayer
+## Build
+
+From the top-level project directory call:
+
+```
+mvn clean install
+```
+
+## Modules
+
+### VLCJFXVideoPlayer
 
 This is a very simple example of a video player which uses the new WritableImage
 of JavaFX 13 with support for Buffers. The idea is to let VLC directly render into
@@ -22,15 +32,7 @@ itself on Windows. Tested on macOS 10.14.6 and Linux.
 This software is based on the [VLCJ project](https://github.com/caprica/vlcj).
 Other dependencies can be found in the pom.xml.
 
-### Build
-
-From the top-level project directory call:
-
-```
-mvn clean install
-```
-
-### Run
+#### Run
 
 From the top-level project directory call:
 
@@ -44,6 +46,18 @@ or
 mvn exec:java -pl jfxtools-vlcjfx-demos -Dexec.mainClass=de.mpmediasoft.jfxtools.vlcjfx.demo.VLCJFXVideoPlayerDemo2Launcher
 ```
 
+### AWTImage
 
+A simple wrapper arround an AWT image which utilizes the new WritableImage
+of JavaFX 13 with support for Buffers. Internally a JavaFX image is created
+which directly uses the same memory as the AWT image. So if you render
+into the AWT image with a AWT graphics context, the result will immediately
+appear on the screen.
 
+#### Run
 
+From the top-level project directory call:
+
+```
+mvn exec:java -pl jfxtools-awtimage-demos -Dexec.mainClass=de.mpmediasoft.jfxtools.awtimage.demo.AWTImageDemo
+```

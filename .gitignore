@@ -5,3 +5,5 @@
 jfxtools-vlcjfx-demos/.classpath
 *.prefs
 jfxtools-vlcjfx/.classpath
+jfxtools-awtimage-demos/.classpath
+jfxtools-awtimage/.classpath
