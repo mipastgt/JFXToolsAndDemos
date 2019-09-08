@@ -8,7 +8,7 @@
 		<artifactId>jfxtools</artifactId>
 		<version>1.0.0</version>
 	</parent>
-	<artifactId>jfxtools-demos</artifactId>
+	<artifactId>jfxtools-vlcjfx-demos</artifactId>
 
 	<build>
 		<plugins>
