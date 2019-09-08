@@ -13,13 +13,14 @@ What I have not considered yet is any kind of synchronization.
 I think an extension of the PixelBuffer to support some kind of double-buffering
 would be the right thing to do.
 
-This should work on macOS and Linux but there currently seem to be problems with the VLC code
-itself on Windows.
-
 In order to run the code, a recent version of the VLC player (3.0.x+) must be installed
-in a standard location on the system. Other dependencies can be found in the pom.xml.
+in a standard location on the system.
 
-Tested on macOS 10.14.6 and Linux.
+This should work on macOS and Linux but there currently seem to be problems with the VLC code
+itself on Windows. Tested on macOS 10.14.6 and Linux.
+
+This software is based on the [VLCJ project](https://github.com/caprica/vlcj).
+Other dependencies can be found in the pom.xml.
 
 ### Build
 
