@@ -23,7 +23,7 @@
 		<!-- Project properties -->
 		
 		<jfxtools.version>1.0.0</jfxtools.version>		
-		<openjfx.version>13-ea+14b</openjfx.version>
+		<openjfx.version>13</openjfx.version>
 	</properties>
 
 	<build>
