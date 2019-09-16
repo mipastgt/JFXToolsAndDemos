@@ -15,7 +15,9 @@ mvn clean install
 ### VLCJFXVideoPlayer
 
 This is a very simple example of a video player which uses the new WritableImage
-of JavaFX 13 with support for Buffers. The idea is to let VLC directly render into
+of JavaFX 13 with support for Buffers to improve performance. The idea is to let the
+well known [VLC media player](http://www.videolan.org/vlc/), which can play almost
+everything you throw at it, directly render into
 this buffer and use the image directly in an ImageView without any explicit rendering
 into a canvas or such thing. Only this brings the desired performance boost.
 
