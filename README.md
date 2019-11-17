@@ -58,8 +58,18 @@ appear on the screen.
 
 #### Run
 
+There are two examples for AWTImage. The first one just does some drawing and demonstrates the update behaviour
+and the second one utilizes AWTImage to build a little JavaFX PDF viewer based on Apache PDFBox.
+
 From the top-level project directory call:
 
 ```
 mvn exec:java -pl jfxtools-awtimage-demos -Dexec.mainClass=de.mpmediasoft.jfxtools.awtimage.demo.AWTImageDemo
 ```
+
+or
+
+```
+mvn exec:java -pl jfxtools-awtimage-demos -Dexec.mainClass=de.mpmediasoft.jfxtools.awtimage.demo.PDFViewerDemo -Dexec.args="myPDF.pdf"
+```
+
