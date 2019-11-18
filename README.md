@@ -70,6 +70,6 @@ mvn exec:java -pl jfxtools-awtimage-demos -Dexec.mainClass=de.mpmediasoft.jfxtoo
 or
 
 ```
-mvn exec:java -pl jfxtools-awtimage-demos -Dexec.mainClass=de.mpmediasoft.jfxtools.awtimage.demo.PDFViewerDemo -Dexec.args="myPDF.pdf"
+mvn exec:java -pl jfxtools-awtimage-demos -Dexec.mainClass=de.mpmediasoft.jfxtools.awtimage.demo.PDFViewerDemo"
 ```
 

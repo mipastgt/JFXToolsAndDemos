@@ -17,13 +17,12 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ToolBar;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 /** 
  * A simple demo to show how the AWTImage class can be used to build
  * a simple PDF viewer based on Apache PDFBox.
- * 
- * The first argument of the main program must be a valid path to a PDF document.
  * 
  * @author Michael Paus
  */
@@ -36,10 +35,11 @@ public class PDFViewerDemo extends Application {
     
     private ImageView imageView;
 	private AWTImage awtImage;	
-	private String pdfFileName;	
+//	private String pdfFileName;	
     private PDDocument document;    
     private PDFRenderer pdfRenderer;
     private int pageIndex;
+    private FileChooser fileChooser;
     
 	@Override
 	public void init() {
@@ -49,19 +49,29 @@ public class PDFViewerDemo extends Application {
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-	    Button pageBackwardButton = new Button("Page backward");
+        fileChooser = new FileChooser();
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("PDF files (*.pdf)", "*.pdf"));
+        Button selectPDFButton = new Button("Select PDF");
+        selectPDFButton.setOnAction(e -> {
+            File pdfFile = fileChooser.showOpenDialog(primaryStage);
+            if (pdfFile != null) {
+                open(pdfFile);
+            }
+        });
+        
+        Button pageBackwardButton = new Button("<");
         pageBackwardButton.setOnAction(e -> {
             pageIndex = Math.max(pageIndex - 1, 0);
             awtImage.update();
         });
         
-        Button pageForwardButton = new Button("Page forward");
+        Button pageForwardButton = new Button(">");
         pageForwardButton.setOnAction(e -> {
             pageIndex = Math.min(pageIndex + 1, document.getNumberOfPages() - 1);
             awtImage.update();
         });
         
-		ToolBar toolbar = new ToolBar(pageBackwardButton, pageForwardButton);
+		ToolBar toolbar = new ToolBar(selectPDFButton, pageBackwardButton, pageForwardButton);
 		
 		BorderPane root = new BorderPane();
 		root.setTop(toolbar);
@@ -76,16 +86,19 @@ public class PDFViewerDemo extends Application {
 		primaryStage.show();
 		
         Platform.runLater(() -> {
+            // Load initial PDF if provided.
             Parameters params = getParameters();
-            pdfFileName = params.getRaw().get(0);
-            open(pdfFileName);
+            if (params.getRaw().size() > 0) {
+                String pdfFileName = params.getRaw().get(0);
+                open(new File(pdfFileName));
+            }
         });
 	}
 	
-	private void open(String pdfFileName) {
+	private void open(File pdfFile) {
         try {
-            File pdfFile = new File(pdfFileName);
             if (pdfFile.canRead()) {
+                if (document != null) document.close();
                 document = PDDocument.load(pdfFile);
                 pdfRenderer = new PDFRenderer(document);
                 pdfRenderer.setSubsamplingAllowed(true);
@@ -127,7 +140,7 @@ public class PDFViewerDemo extends Application {
                 awtImage.update();
             } else {
                 System.err.println("The first argument of the main program must be a valid path to a PDF document.");
-                System.err.println("pdfFileName: " + pdfFileName);
+                System.err.println("pdfFile: " + pdfFile);
                 Platform.exit();
             }
         } catch (IOException e) {
