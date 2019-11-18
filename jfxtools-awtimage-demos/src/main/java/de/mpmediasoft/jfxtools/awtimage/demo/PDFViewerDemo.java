@@ -28,14 +28,13 @@ import javafx.stage.Stage;
  */
 public class PDFViewerDemo extends Application {
     
-    private final static int IMAGE_WIDTH = 700;
-    private final static int IMAGE_HEIGHT = 700;
+    private final static int IMAGE_WIDTH = 1280;
+    private final static int IMAGE_HEIGHT = 720;
     
     private final static java.awt.Color awtBackgroundColor = java.awt.Color.WHITE;
     
     private ImageView imageView;
 	private AWTImage awtImage;	
-//	private String pdfFileName;	
     private PDDocument document;    
     private PDFRenderer pdfRenderer;
     private int pageIndex;
