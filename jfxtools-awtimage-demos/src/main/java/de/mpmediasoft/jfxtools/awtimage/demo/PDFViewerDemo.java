@@ -32,6 +32,8 @@ public class PDFViewerDemo extends Application {
     private final static int IMAGE_WIDTH = 700;
     private final static int IMAGE_HEIGHT = 700;
     
+    private final static java.awt.Color awtBackgroundColor = java.awt.Color.WHITE;
+    
     private ImageView imageView;
 	private AWTImage awtImage;	
 	private String pdfFileName;	
@@ -107,6 +109,10 @@ public class PDFViewerDemo extends Application {
                             float scale = Math.min(scaleX, scaleY);
                             
                             Graphics2D g2 = (Graphics2D) awtImage.getAWTImage().getGraphics();
+                            // Set background for transparent pages
+                            g2.setBackground(awtBackgroundColor);
+                            g2.fillRect(0, 0, awtImage.getWidth(), awtImage.getHeight());
+                            // Render the selected page
                             pdfRenderer.renderPageToGraphics(pageIndex, g2, scale);
                             g2.dispose();
                         } catch (IOException e) {
