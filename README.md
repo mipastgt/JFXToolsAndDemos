@@ -2,8 +2,6 @@
 
 A collection of tools and demos for JavaFX.
 
-[Special](doc/special.adoc)
-
 ## Build
 
 From the top-level project directory call:
