@@ -80,8 +80,11 @@ It uses the new WritableImage of JavaFX 13 with support for Buffers to improve p
 
 For more details see: [NativeRenderingCanvas](jfxtools-canvas/docs/NativeRenderingCanvas.adoc)
 
-**Attention: The event-handling in this example currently only works with JDK 11 and JFX 13+.**
+**Attention 1: The event-handling in this example currently only works with JDK 11 and JFX 13+.**
 See [JDK-8236971](https://bugs.openjdk.java.net/browse/JDK-8236971).
+
+**Attention 2: Building the native part on anything else but macOS is completely untested.**
+**Building the native part on Windows requires MinGW.**
 
 #### Run
 
