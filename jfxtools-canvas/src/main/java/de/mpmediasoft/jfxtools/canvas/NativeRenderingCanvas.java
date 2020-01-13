@@ -292,25 +292,33 @@ public class NativeRenderingCanvas {
         }
     }
     
-    private class RenderingService extends Service<Integer> {        
+    private class RenderingService extends Service<Integer> {
+        private boolean dirty = false;
+
         RenderingService() {
             setExecutor(executorService);
-            
+
             this.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
                 @Override
                 public void handle(WorkerStateEvent t) {
-                    renderUpdate((Integer)t.getSource().getValue());
+                    renderUpdate((Integer) t.getSource().getValue());
+                    if (dirty) {
+                        renderIfIdle();
+                    }
                 }
             });
         }
- 
+
         void renderIfIdle() {
             State state = getState();
             if (state != State.SCHEDULED && state != State.RUNNING) {
+                dirty = false;
                 restart();
+            } else {
+                dirty = true;
             }
         }
-        
+
         @Override
         protected Task<Integer> createTask() {
             return new Task<Integer>() {
