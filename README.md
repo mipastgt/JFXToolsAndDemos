@@ -73,3 +73,21 @@ or
 mvn exec:java -pl jfxtools-awtimage-demos -Dexec.mainClass=de.mpmediasoft.jfxtools.awtimage.demo.PDFViewerDemo"
 ```
 
+### NativeRenderingCanvas
+
+An example to show how some native renderer can be integrated seemlessly into JavaFX.
+It uses the new WritableImage of JavaFX 13 with support for Buffers to improve performance.
+
+For more details see: [NativeRenderingCanvas](jfxtools-canvas/docs/NativeRenderingCanvas.adoc)
+
+**Attention: The event-handling in this example currently only works with JDK 11 and JFX 13+.**
+See [JDK-8236971](https://bugs.openjdk.java.net/browse/JDK-8236971).
+
+#### Run
+
+From the top-level project directory call:
+
+```
+mvn -pl jfxtools-canvas-demos exec:exec
+```
+

@@ -1,0 +1,51 @@
+= NativeRenderingCanvas
+
+This is an example to show how some native renderer can be integrated seemlessly into
+JavaFX. It uses the new WritableImage of JavaFX 13 with support for Buffers to improve performance.
+
+It consists of the following parts:
+
+* NativeRenderingCanvasDemo: A simple demo to show how the NativeRenderingCanvas class is supposed
+  to be used.
+* NativeRenderingCanvas: A native rendering canvas. The assumption is that some native renderer
+  produces an image provided as an IntBuffer or ByteBuffer. The PixelFormats
+  must be IntArgbPre or ByteBgraPre respectively. For the API see NativeRenderer.
+  This buffer is then used to create an Image which is bound to an ImageView.
+  This class manages the direct display of this Image in a Pane and reacts to
+  user input via mouse input or gestures on touch devices.
+* NativeRenderer: The JNI interface to the native renderer.
+* de_mpmediasoft_jfxtools_canvas_NativeRenderer.c: A C implementation of the JNI interface as defined in NativeRenderer.java.
+  The code in here is not really relevant for the example. It just renders a map
+  consisting of square red and green tiles on a blue background. It is
+  basically just a placeholder for some real code which uses, e.g., OpenGL or
+  some other rendering library to create an image representation in a memory buffer.
+  
+The key points of this example are the following: The NativeRenderingCanvas provides a
+Pane which can be directly connected to some layout-pane of the JavaFX scene graph.
+Whenever this pane is resized it is decided whether the rendered image also has to be
+resized. For performance reasons this is only done in increments of 64 pixels. If the
+image size has to be changed, the native renderer is told to create a new canvas which
+is returned as a ByteBuffer. At this point the native renderer is also told how many
+buffers and which color model should be used.
+
+JavaFX currently does not support double-buffering but it can be emulated with a little
+trick. When we use two buffers, we actually create an image which has twice the hight
+of the actually required image. The renderer then renders intermittently into the upper
+and the lower half of this image. When the rendering completes the viewport of the internal
+ImageView is set according to the used buffer. The only prerequisite for this trick is
+that the native renderer does support double-buffering and can ensure that the two
+buffers reside in a contiguous piece of memory with the described layout.
+
+It is crucial for the performance that the native renderer always renders directly into the
+allocated buffer and does not create copies of the buffer other than getting the rendered
+image from the graphics hardware into main memory. This transfer into main memory is
+not ideal but is currently the most portable solution for a JavaFX integration and is
+sufficient for many applications. The nice thing is that this is a constant overhead which
+is independent of the complexity of the rendered graphics.
+
+The user can interact with the renderer via mouse input or gestures on touch devices.
+These events are mapped to corresponding application specific commands to update the
+rendering parameters. For this example I have implemented moving arround the graphics
+via dragging with the mouse or a scrolling gesture on a touch device, e.g., movement
+of two fingers on a touch pad. (The generated inertial events show nicely how smooth
+the movement is.)

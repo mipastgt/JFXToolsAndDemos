@@ -19,11 +19,13 @@
         <maven-jar-plugin.version>3.2.0</maven-jar-plugin.version>
         <maven-surefire-plugin.version>3.0.0-M4</maven-surefire-plugin.version>
         <maven-source-plugin.version>3.2.0</maven-source-plugin.version>
+        <exec-maven-plugin.version>1.6.0</exec-maven-plugin.version>
 
 		<!-- Project properties -->
 		
 		<jfxtools.version>1.0.0</jfxtools.version>		
-		<openjfx.version>14-ea+6</openjfx.version>
+        <openjdk.version>11</openjdk.version>
+        <openjfx.version>14-ea+7</openjfx.version>
 	</properties>
 
 	<build>
@@ -35,8 +37,8 @@
 			    <configuration>
 					<verbose>false</verbose>
 					<fork>false</fork>
-					<source>13</source>
-					<target>13</target>
+					<source>${openjdk.version}</source>
+					<target>${openjdk.version}</target>
 			    </configuration>
 			</plugin>
 			<plugin>
@@ -90,6 +92,8 @@
 		<module>jfxtools-vlcjfx-demos</module>
 		<module>jfxtools-awtimage</module>
 		<module>jfxtools-awtimage-demos</module>
+		<module>jfxtools-canvas</module>
+		<module>jfxtools-canvas-demos</module>
 	</modules>
 
 </project>
