@@ -212,6 +212,12 @@ public class NativeRenderingCanvas {
         nativeRenderer.dispose();
     }
     
+	/**
+	 * Return the root node of the NativeRenderingCanvas which can be directly
+	 * added to some layout-pane.
+	 * 
+	 * @return the root node of the NativeRenderingCanvas.
+	 */
 	public Node getRoot() {return canvasPane;}
 	
 	private void render() {
