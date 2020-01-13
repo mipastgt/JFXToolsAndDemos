@@ -214,7 +214,7 @@ public class NativeRenderingCanvas {
     
 	public Node getRoot() {return canvasPane;}
 	
-	public void render() {
+	private void render() {
 	    if (pixelBuffer != null) {
 	        pixelBuffer.updateBuffer(pb -> {
 //                long t0 = System.nanoTime();
