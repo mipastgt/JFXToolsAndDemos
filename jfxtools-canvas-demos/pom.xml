@@ -28,6 +28,7 @@
                     <arguments>
                         <argument>-classpath</argument>
                         <classpath/>
+                        <argument>-ea/</argument>
                         <argument>-Djava.library.path=../jfxtools-canvas/target/libs/</argument>
                         <argument>de.mpmediasoft.jfxtools.canvas.demo.NativeRenderingCanvasDemoLauncher</argument>
                     </arguments>

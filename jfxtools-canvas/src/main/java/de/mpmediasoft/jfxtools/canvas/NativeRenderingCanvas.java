@@ -1,9 +1,16 @@
 package de.mpmediasoft.jfxtools.canvas;
 
 import java.nio.IntBuffer;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
+import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.concurrent.Service;
+import javafx.concurrent.Task;
+import javafx.concurrent.WorkerStateEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.image.ImageView;
@@ -22,7 +29,6 @@ import javafx.scene.layout.Pane;
  * user input via mouse input or gestures on touch devices.
  * 
  * TODOs:
- * - Run the native renderer on a separate thread.
  * - Handle different render scales.
  * - Packaging of native part into jar file.
  * 
@@ -31,13 +37,28 @@ import javafx.scene.layout.Pane;
 public class NativeRenderingCanvas {
     
     // Configure this to use double-buffering [2] or not [1].
-    private int numBuffers = 2;
+    private final int numBuffers = 2;
     
+    // Configure this to use an external thread or the JavaFX application thread for rendering.
+    private final boolean useRenderingService = true;
+    
+    private final int MAX_THREADS = 1; // More than one thread does not make sense for this service setup!
+    
+    private int threadCounter = 0;
+
+    private final ExecutorService executorService = Executors.newFixedThreadPool(MAX_THREADS, runnable -> {
+        Thread t = new Thread(runnable);
+        t.setDaemon(true);
+        t.setName("NativeRenderer_" + (threadCounter++));
+        return t ;
+    });
+
     private final PixelFormat<IntBuffer> pixelFormat;
     private final ObjectProperty<WritableImage> fxImage;    
     private final ImageView imageView;
     private final Pane canvasPane;
     private final NativeRenderer nativeRenderer;
+    private final RenderingService renderingService;
     
     private PixelBuffer<IntBuffer> pixelBuffer;
     
@@ -59,6 +80,7 @@ public class NativeRenderingCanvas {
      */
     public NativeRenderingCanvas() {
         nativeRenderer = new NativeRenderer();
+        renderingService = new RenderingService();
         canvasPane = new Pane();
         fxImage = new SimpleObjectProperty<>();
         pixelFormat = PixelFormat.getIntArgbPreInstance();
@@ -105,14 +127,13 @@ public class NativeRenderingCanvas {
         imageView.setOnMouseDragged(e -> {
             if (! e.isSynthesized()) {
 //                System.out.println("setOnMouseDragged");
-                double dx = mx - e.getX();
-                double dy = my - e.getY();
-                nrViewX += dx;
-                nrViewY += dy;            
-                render();
+                nrViewX += mx - e.getX();
+                nrViewY += my - e.getY();            
                 mx = e.getX();
                 my = e.getY();
                 e.consume();
+                
+                render();
             }
         });
         
@@ -167,22 +188,25 @@ public class NativeRenderingCanvas {
 //            System.out.print(" " + e.getTextDeltaXUnits() + " " + e.getTextDeltaYUnits());
 //            System.out.print(" " + e.getX() + " " + e.getY());
 //            System.out.println();
-            render();
             e.consume();
+            
+            render();
         });
         
         imageView.setOnZoom(e -> {
 //            System.out.println("setOnZoom: " + e.getZoomFactor());
             // Action not yet implemented.
-            render();
             e.consume();
+            
+            render();
         });
         
         imageView.setOnRotate(e -> {
 //            System.out.println("setOnZoom: " + e.getAngle() + " " + e.getTotalAngle());
             // Action not yet implemented.
-            render();
             e.consume();
+            
+            render();
         });        
     }
         
@@ -222,19 +246,32 @@ public class NativeRenderingCanvas {
 	
 	private void render() {
 	    if (pixelBuffer != null) {
-	        pixelBuffer.updateBuffer(pb -> {
-//                long t0 = System.nanoTime();
-                nativeRenderer.moveTo(nrViewX, nrViewY);
-                int bufferIndex = nativeRenderer.render();
-                final Rectangle2D renderedFrame = new Rectangle2D(0.0, bufferIndex * nrViewHeight, imageView.getFitWidth(), imageView.getFitHeight());
-                imageView.setViewport(renderedFrame);
-//                long t1 = System.nanoTime();
-//                System.out.format("Rendering: %f millis\n", (t1 - t0)*0.000_001);
-                return renderedFrame;
-	        });
+	        if (useRenderingService) {
+	            renderingService.renderIfIdle();
+	        } else {
+                final int bufferIndex = renderAction();
+                renderUpdate(bufferIndex);
+	        }
 	    }
 	}
 	
+	// Can be called on any thread.
+    private int renderAction() {
+//        System.out.println("Rendering on: " + Thread.currentThread().getName());
+        nativeRenderer.moveTo(nrViewX, nrViewY);
+        return nativeRenderer.render();
+    }
+    
+    // Must be called on JavaFX application thread.
+    private void renderUpdate(int bufferIndex) {
+        assert Platform.isFxApplicationThread() : "Not called on JavaFX application thread.";
+        pixelBuffer.updateBuffer(pb -> {
+            final Rectangle2D renderedFrame = new Rectangle2D(0.0, bufferIndex * nrViewHeight, imageView.getFitWidth(), imageView.getFitHeight());
+            imageView.setViewport(renderedFrame);
+            return renderedFrame;
+        });
+    }
+    
     private void createCanvas(int width, int height) {
         if (width > 0 && height > 0) {
             // Increment or decrement the view size in steps of view_incr.
@@ -252,6 +289,36 @@ public class NativeRenderingCanvas {
                 
                 fxImage.set(new WritableImage(pixelBuffer));
             }
+        }
+    }
+    
+    private class RenderingService extends Service<Integer> {        
+        RenderingService() {
+            setExecutor(executorService);
+            
+            this.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
+                @Override
+                public void handle(WorkerStateEvent t) {
+                    renderUpdate((Integer)t.getSource().getValue());
+                }
+            });
+        }
+ 
+        void renderIfIdle() {
+            State state = getState();
+            if (state != State.SCHEDULED && state != State.RUNNING) {
+                restart();
+            }
+        }
+        
+        @Override
+        protected Task<Integer> createTask() {
+            return new Task<Integer>() {
+                @Override
+                protected Integer call() {
+                    return renderAction();
+                }
+            };
         }
     }
     
