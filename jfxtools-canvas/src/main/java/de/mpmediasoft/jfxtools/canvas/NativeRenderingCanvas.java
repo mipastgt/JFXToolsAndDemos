@@ -43,7 +43,7 @@ public class NativeRenderingCanvas {
     private final int numBuffers = 2;
     
     // Configure this to use an external thread or the JavaFX application thread for rendering.
-    private final boolean doRenderingAsynchronous = false; // The resizing does not work perfectly yet !!!
+    private final boolean doRenderingAsynchronously = true; // The resizing does not work perfectly yet !!!
     
     private final int MAX_THREADS = 1; // More than one thread does not make sense for this service setup!
     
@@ -231,26 +231,26 @@ public class NativeRenderingCanvas {
 	public Node getRoot() {return canvasPane;}
 	
 	private void render(Viewport viewport) {
-	    if (doRenderingAsynchronous) {
+	    if (doRenderingAsynchronously) {
             nrViewport = viewport;
             renderingService.renderIfIdle(viewport);
         } else {
-            checkCanvas(viewport, nrViewport);                        
+            PixelBuffer<IntBuffer> newPixelBuffer = checkCanvas(viewport, nrViewport);                        
             nrViewport = viewport;
-            if (pixelBuffer != null) {
-                renderUpdate(renderAction(viewport), viewport);
+            if (newPixelBuffer != null) {
+                renderUpdate(renderAction(viewport), viewport, newPixelBuffer);
             }
         }
 	}
 	
-	private void checkCanvas(Viewport newViewport, Viewport oldViewport) {
+	private PixelBuffer<IntBuffer> checkCanvas(Viewport newViewport, Viewport oldViewport) {
         if (newViewport != oldViewport) {
             if (newViewport.getWidth() != oldViewport.getWidth() || newViewport.getHeight() != oldViewport.getHeight()) {
                 final IntBuffer intBuffer = nativeRenderer.createCanvas(newViewport.getWidth(), newViewport.getHeight(), numBuffers, NativeColorModel.INT_ARGB_PRE.ordinal()).asIntBuffer();        
-                pixelBuffer = new PixelBuffer<>(newViewport.getWidth(), numBuffers * newViewport.getHeight(), intBuffer, pixelFormat);                
-                fxImage.set(new WritableImage(pixelBuffer));
+                return new PixelBuffer<>(newViewport.getWidth(), numBuffers * newViewport.getHeight(), intBuffer, pixelFormat);                
             }
         }
+        return pixelBuffer;
 	}
 	
 	// Can be called on any thread.
@@ -260,8 +260,12 @@ public class NativeRenderingCanvas {
     }
     
     // Must be called on JavaFX application thread.
-    private void renderUpdate(int bufferIndex, Viewport viewport) {
+    private void renderUpdate(int bufferIndex, Viewport viewport, PixelBuffer<IntBuffer> newPixelBuffer) {
         assert Platform.isFxApplicationThread() : "Not called on JavaFX application thread.";
+        if (newPixelBuffer != pixelBuffer) {
+            pixelBuffer = newPixelBuffer;
+            fxImage.set(new WritableImage(pixelBuffer));
+        }
         pixelBuffer.updateBuffer(pb -> {
             final Rectangle2D renderedFrame = new Rectangle2D(
                 0,
@@ -277,6 +281,7 @@ public class NativeRenderingCanvas {
         private Viewport oldViewport = emptyViewport;
         private Viewport newViewport = emptyViewport;
         private Viewport dirtyViewport = emptyViewport;
+        private PixelBuffer<IntBuffer> newPixelBuffer = null;
 
         RenderingService() {
             setExecutor(executorService);
@@ -284,7 +289,7 @@ public class NativeRenderingCanvas {
             this.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
                 @Override
                 public void handle(WorkerStateEvent t) {
-                    renderUpdate((Integer) t.getSource().getValue(), newViewport);
+                    renderUpdate((Integer) t.getSource().getValue(), newViewport, newPixelBuffer);
                     renderIfIdle(dirtyViewport);
                 }
             });
@@ -309,7 +314,7 @@ public class NativeRenderingCanvas {
                     oldViewport = newViewport;
                     newViewport = dirtyViewport;
                     dirtyViewport = emptyViewport;
-                    checkCanvas(newViewport, oldViewport);            
+                    newPixelBuffer = checkCanvas(newViewport, oldViewport);            
                     return renderAction(newViewport);
                 }
             };
