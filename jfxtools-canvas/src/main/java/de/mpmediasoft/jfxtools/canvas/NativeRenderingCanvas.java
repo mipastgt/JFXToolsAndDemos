@@ -31,6 +31,7 @@ import javafx.scene.layout.Pane;
  * user input via mouse input or gestures on touch devices.
  * 
  * TODOs:
+ * - Implement further user actions.
  * - Handle different render scales.
  * - Packaging of native part into jar file.
  * 
@@ -63,8 +64,8 @@ public class NativeRenderingCanvas {
     
     private PixelBuffer<IntBuffer> pixelBuffer;
     
-    // The native renderer view size. Its width and height are multiples of nrViewIncrement
-    // and thus will normally be larger than the canvasPane width and height.
+    // The native renderer viewport. Its width and height are multiples of nrViewIncrement
+    // and thus will normally be larger than the canvasPanes width and height.
     private int nrViewIncrement = 64; 
     private final Viewport emptyViewport = new Viewport();
     private Viewport nrViewport = emptyViewport;
@@ -109,7 +110,6 @@ public class NativeRenderingCanvas {
         
         imageView.setOnMousePressed(e -> {
             if (! e.isSynthesized()) {
-//                System.out.println("setOnMousePressed");
                 mx = e.getX();
                 my = e.getY();            
                 e.consume();
@@ -118,7 +118,6 @@ public class NativeRenderingCanvas {
         
         imageView.setOnMouseReleased(e -> {
             if (! e.isSynthesized()) {
-//                System.out.println("setOnMouseReleased");
                 mx = 0.0;
                 my = 0.0;            
                 e.consume();
@@ -127,7 +126,6 @@ public class NativeRenderingCanvas {
         
         imageView.setOnMouseDragged(e -> {
             if (! e.isSynthesized()) {
-//                System.out.println("setOnMouseDragged");
                 Viewport newViewport = nrViewport.withDeltaLocation((int)(mx - e.getX()), (int)(my - e.getY()));
                 mx = e.getX();
                 my = e.getY();
@@ -137,32 +135,27 @@ public class NativeRenderingCanvas {
             }
         });
         
-        // According to the JavaFX documentation, scroll started/finished indicates that this gesture was
-        // performed on a touch device and not the mouse wheel. But due to a bug (at least on macOS, see:
-        // https://bugs.openjdk.java.net/browse/JDK-8236971 ) this mechanism currently does not work.
-        
-        // It only works for JDKs up to 11 but JFX can be the latest version.
-        
         imageView.setOnScrollStarted(e -> {
-//            System.out.println("setOnScrollStarted");
             inScrollBrackets = true;
         });
         
         imageView.setOnScrollFinished(e -> {
-//            System.out.println("setOnScrollFinished");
             inScrollBrackets = false;
         });
         
         imageView.setOnScroll(e -> {
             
-            // This mechanism does not work due to above bug because the total-delta values are NOT zero for mouse-wheels.            
-//          ScrollAction scrollAction = (e.getTotalDeltaX() != 0 || e.getTotalDeltaY() != 0.0) ? ScrollAction.ZOOM : ScrollAction.PAN;
+            // According to the JavaFX documentation, scroll started/finished indicates that this gesture was
+            // performed on a touch device and not the mouse wheel. But due to a bug (at least on macOS, see:
+            // https://bugs.openjdk.java.net/browse/JDK-8236971 ) this mechanism currently does not work            
+            // for JDKs above 11 independent of the JFX version used.
             
-            // An ugly fix is to force the user to make the distinction by pressing the shortcut-key to indicate a zoom.
-//          ScrollAction scrollAction = (e.isShortcutDown()) ? ScrollAction.ZOOM : ScrollAction.PAN;
+            // This simple mechanism does not work due to above bug because the total-delta values are NOT zero for mouse-wheels.            
+//          ScrollAction scrollAction = (e.getTotalDeltaX() != 0 || e.getTotalDeltaY() != 0.0) ? ScrollAction.ZOOM : ScrollAction.PAN;
             
             // We need all these criteria to find out whether this event comes from a mouse wheel
             // and it remains to be tested whether this works on all platforms and all devices.
+            // Also this workarround only works with JDKs <= 11.
             ScrollAction scrollAction;
             if (! inScrollBrackets &&
                 ! e.isInertia() &&
@@ -174,29 +167,21 @@ public class NativeRenderingCanvas {
             } else {
                 scrollAction = ScrollAction.PAN;
             }
-            
-            
-            Viewport newViewport = nrViewport;
+                        
+            Viewport newViewport;
             if (scrollAction == ScrollAction.ZOOM) {
-//                System.out.print("Zoom: ");
-                // Action not yet implemented.
+                // TODO: Implement action.
+                newViewport = nrViewport;
             } else {
-//                System.out.print("Scroll: ");
                 newViewport = nrViewport.withDeltaLocation((int)-e.getDeltaX(), (int)-e.getDeltaY());
             }
-//            System.out.print(e.getDeltaX() + " " + e.getTotalDeltaX() + " " + e.getDeltaY() + " " + e.getTotalDeltaY() + " " + e.isInertia());
-//            System.out.print(" " + e.getMultiplierX() + " " + e.getMultiplierY() + " " + e.getTextDeltaX() + " " + e.getTextDeltaY());
-//            System.out.print(" " + e.getTextDeltaXUnits() + " " + e.getTextDeltaYUnits());
-//            System.out.print(" " + e.getX() + " " + e.getY());
-//            System.out.println();
             e.consume();
             
             render(newViewport);
         });
         
         imageView.setOnZoom(e -> {
-//            System.out.println("setOnZoom: " + e.getZoomFactor());
-            // Action not yet implemented.
+            // TODO: Implement action.
             Viewport newViewport = nrViewport;
             e.consume();
             
@@ -204,8 +189,7 @@ public class NativeRenderingCanvas {
         });
         
         imageView.setOnRotate(e -> {
-//            System.out.println("setOnZoom: " + e.getAngle() + " " + e.getTotalAngle());
-            // Action not yet implemented.
+            // TODO: Implement action.
             Viewport newViewport = nrViewport;
             e.consume();
             
@@ -271,7 +255,6 @@ public class NativeRenderingCanvas {
 	
 	// Can be called on any thread.
     private int renderAction(Viewport viewport) {
-//        System.out.println("Rendering on: " + Thread.currentThread().getName());
         nativeRenderer.moveTo(viewport.getMinX(), viewport.getMinY());
         return nativeRenderer.render();
     }
