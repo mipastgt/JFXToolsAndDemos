@@ -7,10 +7,12 @@ import java.util.concurrent.Executors;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Bounds;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.image.ImageView;
@@ -40,16 +42,14 @@ public class NativeRenderingCanvas {
     private final int numBuffers = 2;
     
     // Configure this to use an external thread or the JavaFX application thread for rendering.
-    private final boolean useRenderingService = true;
+    private final boolean doRenderingAsynchronous = false; // The resizing does not work perfectly yet !!!
     
     private final int MAX_THREADS = 1; // More than one thread does not make sense for this service setup!
     
-    private int threadCounter = 0;
-
     private final ExecutorService executorService = Executors.newFixedThreadPool(MAX_THREADS, runnable -> {
         Thread t = new Thread(runnable);
         t.setDaemon(true);
-        t.setName("NativeRenderer_" + (threadCounter++));
+        t.setName("NativeRenderer");
         return t ;
     });
 
@@ -59,16 +59,15 @@ public class NativeRenderingCanvas {
     private final Pane canvasPane;
     private final NativeRenderer nativeRenderer;
     private final RenderingService renderingService;
+    private final ChangeListener<? super Bounds> resizeListener;
     
     private PixelBuffer<IntBuffer> pixelBuffer;
     
     // The native renderer view size. Its width and height are multiples of nrViewIncrement
     // and thus will normally be larger than the canvasPane width and height.
-    private int nrViewIncrement = 64;    
-    private int nrViewX = 0;
-    private int nrViewY = 0;
-    private int nrViewWidth = 0;
-    private int nrViewHeight = 0;
+    private int nrViewIncrement = 64; 
+    private final Viewport emptyViewport = new Viewport();
+    private Viewport nrViewport = emptyViewport;
     
     private double mx = 0.0;
     private double my = 0.0;
@@ -93,11 +92,11 @@ public class NativeRenderingCanvas {
 	    imageView.setPreserveRatio(true);
 	    imageView.setPickOnBounds(true);
 	            
-	    canvasPane.boundsInLocalProperty().addListener((v,o,n) -> {
-            createCanvas((int)imageView.getFitWidth(), (int)imageView.getFitHeight());      
-            render();
-        });             
         canvasPane.getChildren().add(imageView);
+        
+        resizeListener = (v,o,n) -> {
+            render(nrViewport.withSizeIncrement((int)canvasPane.getWidth(), (int)canvasPane.getHeight(), nrViewIncrement));
+        };
         
         init();
 	}
@@ -106,6 +105,8 @@ public class NativeRenderingCanvas {
      * Must be called before the NativeRenderingCanvas can be used again after dispose() has been called.
      */
     public void init() {                
+        canvasPane.boundsInLocalProperty().addListener(resizeListener);
+        
         imageView.setOnMousePressed(e -> {
             if (! e.isSynthesized()) {
 //                System.out.println("setOnMousePressed");
@@ -127,13 +128,12 @@ public class NativeRenderingCanvas {
         imageView.setOnMouseDragged(e -> {
             if (! e.isSynthesized()) {
 //                System.out.println("setOnMouseDragged");
-                nrViewX += mx - e.getX();
-                nrViewY += my - e.getY();            
+                Viewport newViewport = nrViewport.withDeltaLocation((int)(mx - e.getX()), (int)(my - e.getY()));
                 mx = e.getX();
                 my = e.getY();
                 e.consume();
                 
-                render();
+                render(newViewport);
             }
         });
         
@@ -175,13 +175,14 @@ public class NativeRenderingCanvas {
                 scrollAction = ScrollAction.PAN;
             }
             
+            
+            Viewport newViewport = nrViewport;
             if (scrollAction == ScrollAction.ZOOM) {
 //                System.out.print("Zoom: ");
                 // Action not yet implemented.
             } else {
 //                System.out.print("Scroll: ");
-                nrViewX -= e.getDeltaX();
-                nrViewY -= e.getDeltaY();
+                newViewport = nrViewport.withDeltaLocation((int)-e.getDeltaX(), (int)-e.getDeltaY());
             }
 //            System.out.print(e.getDeltaX() + " " + e.getTotalDeltaX() + " " + e.getDeltaY() + " " + e.getTotalDeltaY() + " " + e.isInertia());
 //            System.out.print(" " + e.getMultiplierX() + " " + e.getMultiplierY() + " " + e.getTextDeltaX() + " " + e.getTextDeltaY());
@@ -190,23 +191,25 @@ public class NativeRenderingCanvas {
 //            System.out.println();
             e.consume();
             
-            render();
+            render(newViewport);
         });
         
         imageView.setOnZoom(e -> {
 //            System.out.println("setOnZoom: " + e.getZoomFactor());
             // Action not yet implemented.
+            Viewport newViewport = nrViewport;
             e.consume();
             
-            render();
+            render(newViewport);
         });
         
         imageView.setOnRotate(e -> {
 //            System.out.println("setOnZoom: " + e.getAngle() + " " + e.getTotalAngle());
             // Action not yet implemented.
+            Viewport newViewport = nrViewport;
             e.consume();
             
-            render();
+            render(newViewport);
         });        
     }
         
@@ -215,11 +218,10 @@ public class NativeRenderingCanvas {
      * before the NativeRenderingCanvas instance can be used again.
      */
     public void dispose() {
-        nrViewX = 0;
-        nrViewY = 0;
-        nrViewWidth = 0;
-        nrViewHeight = 0;        
+        nrViewport = emptyViewport;
         inScrollBrackets = false;
+        
+        canvasPane.boundsInLocalProperty().removeListener(resizeListener);
         
         imageView.setOnMouseClicked(null);        
         imageView.setOnMousePressed(null);        
@@ -244,56 +246,54 @@ public class NativeRenderingCanvas {
 	 */
 	public Node getRoot() {return canvasPane;}
 	
-	private void render() {
-	    if (pixelBuffer != null) {
-	        if (useRenderingService) {
-	            renderingService.renderIfIdle();
-	        } else {
-                final int bufferIndex = renderAction();
-                renderUpdate(bufferIndex);
-	        }
-	    }
+	private void render(Viewport viewport) {
+	    if (doRenderingAsynchronous) {
+            nrViewport = viewport;
+            renderingService.renderIfIdle(viewport);
+        } else {
+            checkCanvas(viewport, nrViewport);                        
+            nrViewport = viewport;
+            if (pixelBuffer != null) {
+                renderUpdate(renderAction(viewport), viewport);
+            }
+        }
+	}
+	
+	private void checkCanvas(Viewport newViewport, Viewport oldViewport) {
+        if (newViewport != oldViewport) {
+            if (newViewport.getWidth() != oldViewport.getWidth() || newViewport.getHeight() != oldViewport.getHeight()) {
+                final IntBuffer intBuffer = nativeRenderer.createCanvas(newViewport.getWidth(), newViewport.getHeight(), numBuffers, NativeColorModel.INT_ARGB_PRE.ordinal()).asIntBuffer();        
+                pixelBuffer = new PixelBuffer<>(newViewport.getWidth(), numBuffers * newViewport.getHeight(), intBuffer, pixelFormat);                
+                fxImage.set(new WritableImage(pixelBuffer));
+            }
+        }
 	}
 	
 	// Can be called on any thread.
-    private int renderAction() {
+    private int renderAction(Viewport viewport) {
 //        System.out.println("Rendering on: " + Thread.currentThread().getName());
-        nativeRenderer.moveTo(nrViewX, nrViewY);
+        nativeRenderer.moveTo(viewport.getMinX(), viewport.getMinY());
         return nativeRenderer.render();
     }
     
     // Must be called on JavaFX application thread.
-    private void renderUpdate(int bufferIndex) {
+    private void renderUpdate(int bufferIndex, Viewport viewport) {
         assert Platform.isFxApplicationThread() : "Not called on JavaFX application thread.";
         pixelBuffer.updateBuffer(pb -> {
-            final Rectangle2D renderedFrame = new Rectangle2D(0.0, bufferIndex * nrViewHeight, imageView.getFitWidth(), imageView.getFitHeight());
+            final Rectangle2D renderedFrame = new Rectangle2D(
+                0,
+                bufferIndex * viewport.getHeight(),
+                Math.min(canvasPane.getWidth(), viewport.getWidth()),
+                Math.min(canvasPane.getHeight(), viewport.getHeight()));            
             imageView.setViewport(renderedFrame);
             return renderedFrame;
         });
     }
     
-    private void createCanvas(int width, int height) {
-        if (width > 0 && height > 0) {
-            // Increment or decrement the view size in steps of view_incr.
-            int newNrViewWidth = (width % nrViewIncrement > 0) ? (width / nrViewIncrement + 1) * nrViewIncrement : (width / nrViewIncrement) * nrViewIncrement;
-            int newNrViewHeight = (height % nrViewIncrement > 0) ? (height / nrViewIncrement + 1) * nrViewIncrement : (height / nrViewIncrement) * nrViewIncrement;
-            
-//            System.out.println(width + " " + view_width + " " + new_view_width + " : " + height + " " + view_height + " " + new_view_height);            
-            
-            if (newNrViewWidth != nrViewWidth || newNrViewHeight != nrViewHeight) {
-                nrViewWidth = newNrViewWidth;
-                nrViewHeight = newNrViewHeight;
-                        
-                final IntBuffer intBuffer = nativeRenderer.createCanvas(nrViewWidth, nrViewHeight, numBuffers, NativeColorModel.INT_ARGB_PRE.ordinal()).asIntBuffer();        
-                pixelBuffer = new PixelBuffer<>(nrViewWidth, numBuffers * nrViewHeight, intBuffer, pixelFormat);
-                
-                fxImage.set(new WritableImage(pixelBuffer));
-            }
-        }
-    }
-    
     private class RenderingService extends Service<Integer> {
-        private boolean dirty = false;
+        private Viewport oldViewport = emptyViewport;
+        private Viewport newViewport = emptyViewport;
+        private Viewport dirtyViewport = emptyViewport;
 
         RenderingService() {
             setExecutor(executorService);
@@ -301,21 +301,20 @@ public class NativeRenderingCanvas {
             this.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
                 @Override
                 public void handle(WorkerStateEvent t) {
-                    renderUpdate((Integer) t.getSource().getValue());
-                    if (dirty) {
-                        renderIfIdle();
-                    }
+                    renderUpdate((Integer) t.getSource().getValue(), newViewport);
+                    renderIfIdle(dirtyViewport);
                 }
             });
         }
 
-        void renderIfIdle() {
-            State state = getState();
-            if (state != State.SCHEDULED && state != State.RUNNING) {
-                dirty = false;
-                restart();
-            } else {
-                dirty = true;
+        void renderIfIdle(Viewport viewport) {
+            assert Platform.isFxApplicationThread() : "Not called on JavaFX application thread.";
+            if(! viewport.isEmpty()) {
+                dirtyViewport = viewport;
+                State state = getState();
+                if (state != State.SCHEDULED && state != State.RUNNING) {
+                    restart();
+                }
             }
         }
 
@@ -324,7 +323,11 @@ public class NativeRenderingCanvas {
             return new Task<Integer>() {
                 @Override
                 protected Integer call() {
-                    return renderAction();
+                    oldViewport = newViewport;
+                    newViewport = dirtyViewport;
+                    dirtyViewport = emptyViewport;
+                    checkCanvas(newViewport, oldViewport);            
+                    return renderAction(newViewport);
                 }
             };
         }
