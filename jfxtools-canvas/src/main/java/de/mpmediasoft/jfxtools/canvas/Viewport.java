@@ -91,4 +91,9 @@ public class Viewport {
         return height == other.height && minX == other.minX && minY == other.minY && width == other.width;
     }
 
+    @Override
+    public String toString() {
+        return "Viewport [minX=" + minX + ", minY=" + minY + ", width=" + width + ", height=" + height + "]";
+    }
+
 }

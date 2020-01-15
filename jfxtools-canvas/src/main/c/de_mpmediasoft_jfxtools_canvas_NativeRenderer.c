@@ -102,9 +102,8 @@ JNIEXPORT jobject JNICALL Java_de_mpmediasoft_jfxtools_canvas_NativeRenderer_cre
         if (bak_buf != 0) free(bak_buf);
         bak_buf = buf;
         
-        buf = (int *) malloc(buf_total_size_byte);
-    
-        return (*env)->NewDirectByteBuffer(env, buf, buf_total_size_byte);
+        buf = (int *) malloc(buf_total_size_byte);    
+        return (*env)->NewDirectByteBuffer(env, buf, buf_total_size_byte);               
     } else {
         return 0L;
     }
