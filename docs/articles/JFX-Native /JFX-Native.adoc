@@ -1,0 +1,137 @@
+= Building native, real-world JavaFX applications
+Dr.-Ing. Michael Paus, mpMediaSoft GmbH
+Version 1.0.0, 2020-02-08
+:doctype: article
+:encoding: utf-8
+:lang: en
+:toc: left
+:numbered:
+
+[.lead]
+A summary of my lessons learned converting an existing Java application to a native application
+using the Gluon Client Maven plugin.
+
+== Overview
+
+First of all I would like to thank the team at Gluon which made all the following possible.
+Without their continuous, hard work it would not be possible at all to compile a modern
+JavaFX application into a native platform application.
+My thanks of course also include all the people involved in the GraalVM project
+which laid the foundation for the work done for JavaFX by Gluon.
+
+This article summarizes the experiences which I collected while converting one of my
+existing Java applications to a native application using the Gluon Client Maven plugin.
+This is not one of the many demos you can find on the internet, but an application that
+is still relatively small and manageable but otherwise a real-world application
+with a lot of external dependencies and technical challenges. It was not always
+an easy ride but in the end it worked out nicely.
+
+Actually this exercise was just the prelude to the real goal which is to also run this,
+and other similar applications, on mobile platforms like iOS and Android. (My
+main target is Android though, just because I own an Android phone and tablet but
+not any iOS device.) Now that the first step has been taken, I now eagerly await
+the general availability of the Android support of course.
+
+.Screenshot of the application on the Mac.
+image::images/000_mac_DAeCAirspaceValidator.png[]
+
+== Requirements
+
+Just follow the instructions given on the project page at GitHub.
+https://github.com/gluonhq/client-maven-plugin
+Further documentation and some samples can be reached from this entry page too.
+There is also a Gradle plugin, but at the moment the focus of the development seems
+to be on the Maven plugin.
+
+== Build infrastructure
+
+The GraalVM/native-image tool is very memory hungry. When your build times get longer
+and longer, you are probably running out of memory. My initial hello-world builds were
+mostly finished within 2 - 4 minutes but when I started to do bigger builds the times
+went up to 7, 22 and finally more than an hour. This turned out to be caused
+by the insuffcient amount of RAM in my old MacBook Pro, which only had 8 GB of RAM.
+Now I use a Mac mini with 16 GB of RAM and my build times, even for larger projects,
+are back in the 3 minutes range. So, using a development machine with enough memory
+is essential and having even 32 GB of RAM available certainly does not hurt.
+
+Having a fast multi-core CPU also does not hurt. I have seen CPU utilizations of up to
+1200%, which is probably the best you can get from a 6 core CPU with hyperthreading.
+
+== Build configuration
+
+It is advisable to use the following native-image options for the build:
+
+* -ea
+* --verbose
+
+The option `-ea` enables assertions in the resulting image and this is very helpful.
+It is not so easy as in Java to debug a native image and therefore it is helpful to use
+a lot of assertions in your code to be notified as early as possible about potential
+problems, e.g., resources which have not been loaded.
+
+The option `--verbose` makes the output of the build process more verbose and this helps in
+case something goes wrong. As a build takes a while, it makes sense to always use this option
+so that you do not have to repeat the build in case something goes wrong and you don't know why.
+
+== GraalVM/native-image limitations
+
+GraalVM/native-image still has several limitations which may bite you in real-world
+projects. So I strongly advise you to read the following document which
+summarizes most of these limitations.
+
+https://github.com/oracle/graal/blob/master/substratevm/LIMITATIONS.md
+
+The ones I stumbled over most often where:
+
+* Reflection configuration (Everywhere)
+* Method Handles not supported (Log4J, NSMenuFX)
+* Serialization not supported (Disc cache)
+* Soft-References not working as expected (RAM cache)
+
+I'll go into more details in the following sections.
+
+=== Reflection
+
+WIP
+
+=== Resources
+
+WIP
+
+=== Logging
+
+WIP
+
+=== Serialization
+
+WIP
+
+=== Soft references
+
+WIP
+
+=== Single locale
+
+WIP
+
+== JavaFX/Native limitations
+
+WIP
+
+=== System menus
+
+WIP
+
+=== AWT
+
+WIP
+
+javafx.application.HostServices.showDocument
+
+=== Image size
+
+WIP
+
+* 69.3 MB for the app-image created by jpackage versus 94 MB for the executable created by
+  client-maven-plugin.
+
