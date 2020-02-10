@@ -1,4 +1,4 @@
-= Building native, real-world JavaFX applications
+= Building native, AOT compiled, real-world JavaFX applications
 Dr.-Ing. Michael Paus, mpMediaSoft GmbH
 Version 1.0.0, 2020-02-08
 :doctype: article
@@ -8,8 +8,9 @@ Version 1.0.0, 2020-02-08
 :numbered:
 
 [.lead]
-A summary of my lessons learned converting an existing Java application to a native,
-AOT compiled application using the Gluon Client Maven plugin.
+A summary of my lessons learned converting an existing JavaFX application to a native,
+AOT compiled, real-world application using the Gluon Client Maven plugin which is based
+on the GraalVM native-image toolchain.
 
 == Overview
 
@@ -67,7 +68,7 @@ It is advisable to use the following native-image options for the build:
 * --verbose
 
 The option `-ea` enables assertions in the resulting image and this is very helpful.
-It is not so easy as in Java to debug a native image and therefore it is helpful to use
+It is not as easy as in Java to debug a native image and therefore it is helpful to use
 a lot of assertions in your code to be notified as early as possible about potential
 problems, e.g., resources which have not been loaded.
 
@@ -87,7 +88,7 @@ The ones I stumbled over most often where:
 
 * Reflection configuration (Everywhere)
 * Method Handles not supported (Log4J, NSMenuFX)
-* Serialization not supported (Disc cache)
+* Serialization not supported (Disk cache)
 * Soft-References not working as expected (RAM cache)
 
 I'll go into more details in the following sections.
@@ -162,7 +163,7 @@ rewrite my JFX logging handler.
 ==== NSMenuFX
 
 Another library I used was NSMenuFX to get a decent system menu integration for the Mac, which JavaFX
-does not provide by default but it failed with native-image. After a lot of research
+does not provide by default, but it failed with native-image. After a lot of research
 (thanks José https://github.com/gluonhq/substrate/issues/118 ) I finally learned that this is also due
 to the internal use of method handles.
 
@@ -172,13 +173,14 @@ latest release of NSMenuFX.
 
 However, my frustration grew again when I finally realized that this was all in vain and NSMenuFX still
 did not work because the system menu bar is in general not yet supported. This isn't nice for the Mac version
-but as my real go is the Android version it is not such a big problem because there I won't need the
+but as my real goal is the Android version it is not such a big problem because on Android I won't need the
 system menu bar anyway.
 
 === Serialization
 
 I used Java serialization for a temporary disk cache but serialization is currently not
-supported. So I currently have to live without disk cache.
+supported. So I now have to live without disk cache. (The issue was not serious enough
+to justify a switch to another fast serialization technique.)
 
 https://github.com/oracle/graal/blob/master/substratevm/LIMITATIONS.md#serialization
 
@@ -188,7 +190,7 @@ I used a temporary RAM cache in my code which was based on Javas soft-references
 The result was that my native code felt slow and was not very responsive and I was
 actually very disappointed. Finally I found out that this happened because my cache
 was almost always empty and so my software had to load everything from disk over and over
-again. GraalVMs native-image handles references differently than the Java VM which
+again. GraalVMs native-image handles references differently than the Java VM does, which
 has the effect that all soft-references are always immediately cleared and thus became
 useless to me.
 
@@ -205,9 +207,24 @@ have to build separate versions of your application. One for each supported loca
 
 This is already a pain but it gets worse if you look at the possible side effects
 this can have. In fact you cannot even parse a simple string value which does not
-adhere to the converntions of your chosen built-in locale.
+adhere to the conventions of your chosen built-in locale.
 
 See: https://github.com/oracle/graal/issues/2141
+
+=== System properties
+
+When calling ```native-image``` you can define system properties but these are only
+visible to the VM during the build process but not later at run-time of the native
+application. This can cause some confusion because for classes which are initialized
+at build-time, these system properties would be defined, whereas for classes which are
+initialized at run-time they wouldn't.
+
+A concept, how they can be made visible at run-time too, is explained here
+https://github.com/oracle/graal/issues/779 but this does not seem to work anymore
+because classes are now initialized at run-time by default and not at build-time
+as in previous versions. In order to circumvent this problem I created a separate
+class for this and defined via the appropriate command line option ```--initialize-at-build-time``` that this
+particular class should be initialized at build time. This did the trick and it works now.
 
 == JavaFX/Native limitations
 
@@ -242,7 +259,7 @@ steps. But this is still work in progress.
 == Conclusion
 
 This is only a snapshot of my experiences so far in getting a real-world JavaFX
-application compiled into a native image. If have missed something important or you think
+application compiled into a native image. If I have missed something important or you think
 you can help me with one of the open issues, just drop me a line or create an issue here.
 
 Once you have circumvented all the mentioned problems, the resulting binary seems to be
