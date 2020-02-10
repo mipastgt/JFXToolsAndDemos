@@ -8,8 +8,8 @@ Version 1.0.0, 2020-02-08
 :numbered:
 
 [.lead]
-A summary of my lessons learned converting an existing Java application to a native application
-using the Gluon Client Maven plugin.
+A summary of my lessons learned converting an existing Java application to a native,
+AOT compiled application using the Gluon Client Maven plugin.
 
 == Overview
 
@@ -59,6 +59,8 @@ Having a fast multi-core CPU also does not hurt. I have seen CPU utilizations of
 
 == Build configuration
 
+=== Options
+
 It is advisable to use the following native-image options for the build:
 
 * -ea
@@ -92,46 +94,157 @@ I'll go into more details in the following sections.
 
 === Reflection
 
-WIP
+The use of reflection is ubiquitous in the Java world which poses a problem for any AOT
+(ahead of time) compilation of Java code because which classes are accessed via reflection
+is not always known at build time. Some uses can be detected automatically but for others
+a list of classes must be provided by the user at build time.
+
+One way to make this task less tedious and error prone, is to use the tracing agent.
+
+https://medium.com/graalvm/introducing-the-tracing-agent-simplifying-graalvm-native-image-configuration-c3b56c486271
+
+This agent collects relevant data by analyzing the software when executed via a standard
+Java virtual machine. It's a pitty though that the output of this agent cannot yet be integrated
+directly into the configuration of the client-maven-plugin.
+
+See: https://github.com/gluonhq/client-gradle-plugin/issues/25
 
 === Resources
 
-WIP
+Resources can be delt with in a similar way as reflection. The nice thing is that you can
+specify which resources to load via wild cards. In my case it was enough to specify the
+following resource list:
+....
+<resourcesList>
+    <list>.*\\.properties$</list>
+    <list>.*\\.vert$</list>
+    <list>.*\\.wav$</list>
+    <list>.*\\.json$</list>
+    <list>.*\\.COF$</list>
+</resourcesList>
+....
+A special case of this are language resource bundles which are also properties but have to
+be specified in a separate list. It would be very tedious if you would have to explicitly
+differentiate between general properties and language bundles but in my case I found it
+to be ok to keep the properties wild card in the resource list and separately add the
+language bundles to the bundles list like this.
+....
+<bundlesList>
+    <list>com.mycompany.myproject.Main</list>
+    <list>com.mycompany.myproject.airspaces.Airspaces</list>
+    <list>com.mycompany.myproject.maps.Maps</list>
+    <list>controlsfx</list>
+</bundlesList>
+....
 
-=== Logging
+=== Method handles
 
-WIP
+According to the documentation, method handles are not supported.
+
+See: https://github.com/oracle/graal/blob/master/substratevm/LIMITATIONS.md#invokedynamic-bytecode-and-method-handles
+
+This has severe consequences for several libraries and frameworks.
+
+==== Logging
+
+Logging frameworks are notorious users of all kind of reflection magic (I still don't understand why) which
+falls onto your feet when you use native-image. The worst of all is Log4J.
+
+See: https://issues.apache.org/jira/browse/LOG4J2-2649?focusedCommentId=17005296&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-17005296
+
+I finally had to completely abandon Log4J (and in retrospect I wonder why I have ever used it at all).
+This switch was made easy for me by the fact that I have consistently used the SLF4J facade throughout all my
+software, so the only necessary change was the configuration of the logging framework and rewriting my own
+JFX logging handler. I finally ended up using the standard Java logging because that is supported out of the
+box with native-image. The simple variant of SLF4J also worked but it would have been more complicated to
+rewrite my JFX logging handler.
+
+==== NSMenuFX
+
+Another library I used was NSMenuFX to get a decent system menu integration for the Mac, which JavaFX
+does not provide by default but it failed with native-image. After a lot of research
+(thanks José https://github.com/gluonhq/substrate/issues/118 ) I finally learned that this is also due
+to the internal use of method handles.
+
+So I first created an issue https://github.com/codecentric/NSMenuFX/issues/31 on GitHub and
+finally fixed the problem myself and created a pull-request, which has now been integrated into the
+latest release of NSMenuFX. 
+
+However, my frustration grew again when I finally realized that this was all in vain and NSMenuFX still
+did not work because the system menu bar is in general not yet supported. This isn't nice for the Mac version
+but as my real go is the Android version it is not such a big problem because there I won't need the
+system menu bar anyway.
 
 === Serialization
 
-WIP
+I used Java serialization for a temporary disk cache but serialization is currently not
+supported. So I currently have to live without disk cache.
+
+https://github.com/oracle/graal/blob/master/substratevm/LIMITATIONS.md#serialization
 
 === Soft references
 
-WIP
+I used a temporary RAM cache in my code which was based on Javas soft-references.
+The result was that my native code felt slow and was not very responsive and I was
+actually very disappointed. Finally I found out that this happened because my cache
+was almost always empty and so my software had to load everything from disk over and over
+again. GraalVMs native-image handles references differently than the Java VM which
+has the effect that all soft-references are always immediately cleared and thus became
+useless to me.
+
+https://github.com/oracle/graal/blob/master/substratevm/LIMITATIONS.md#references
+
+There is only one small sentence in the documentation which hints at this deviation.
 
 === Single locale
 
-WIP
+A severe, not very well documented, limitation of native-image is the fact that
+currently only one locale  is supported. You have to decide at build time which locale
+you want to use for your application. If you want to support more than one locale you
+have to build separate versions of your application. One for each supported locale.
+
+This is already a pain but it gets worse if you look at the possible side effects
+this can have. In fact you cannot even parse a simple string value which does not
+adhere to the converntions of your chosen built-in locale.
+
+See: https://github.com/oracle/graal/issues/2141
 
 == JavaFX/Native limitations
 
-WIP
+The JavaFX part of the native image creation currently also has some limitations.
 
 === System menus
 
-WIP
+The system menu bar is currently not supported (see above).
 
 === AWT
 
-WIP
+AWT is currently not supported. This would not be such a big deal if some features
+of JavaFX did not depend on it.
 
-javafx.application.HostServices.showDocument
+* Image IO.
+* javafx.application.HostServices.showDocument (fails on Mac)
+
+It would probably be a good idea in general to make JavaFX completely independent
+from AWT.
 
 === Image size
 
-WIP
+The size of the created executable file currently seems to be quite big. In my case, of a still
+quite small application, the size is already 94 MB which is more than the whole
+.app bundle created by jpackage which has only 69.3 MB.
 
-* 69.3 MB for the app-image created by jpackage versus 94 MB for the executable created by
-  client-maven-plugin.
+== Open issues
 
+Besides all the issues mentioned above I still have to get SQLite working for the next
+steps. But this is still work in progress.
+
+== Conclusion
+
+This is only a snapshot of my experiences so far in getting a real-world JavaFX
+application compiled into a native image. If have missed something important or you think
+you can help me with one of the open issues, just drop me a line or create an issue here.
+
+Once you have circumvented all the mentioned problems, the resulting binary seems to be
+quite stable and the performance is also very good. So, I am looking forward to do the next
+step and compile the whole application as an Android app.
