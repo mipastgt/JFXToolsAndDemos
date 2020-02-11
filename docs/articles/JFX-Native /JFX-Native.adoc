@@ -1,6 +1,6 @@
 = Building native, AOT compiled, real-world JavaFX applications
 Dr.-Ing. Michael Paus, mpMediaSoft GmbH
-Version 1.0.0, 2020-02-08
+Version 1.0.1, 2020-02-11
 :doctype: article
 :encoding: utf-8
 :lang: en
@@ -198,6 +198,10 @@ https://github.com/oracle/graal/blob/master/substratevm/LIMITATIONS.md#reference
 
 There is only one small sentence in the documentation which hints at this deviation.
 
+NOTE: I learned from Laurent Bourgès that the MarlinFX renderer uses soft-references
+by default to hold its own renderer context. It should therefore be tuned for
+GraalVM/native-image to use hard references instead: `-Dprism.marlin.useRef=hard`
+
 === Single locale
 
 A severe, not very well documented, limitation of native-image is the fact that
@@ -213,7 +217,7 @@ See: https://github.com/oracle/graal/issues/2141
 
 === System properties
 
-When calling ```native-image``` you can define system properties but these are only
+When calling `native-image` you can define system properties but these are only
 visible to the VM during the build process but not later at run-time of the native
 application. This can cause some confusion because for classes which are initialized
 at build-time, these system properties would be defined, whereas for classes which are
@@ -223,7 +227,7 @@ A concept, how they can be made visible at run-time too, is explained here
 https://github.com/oracle/graal/issues/779 but this does not seem to work anymore
 because classes are now initialized at run-time by default and not at build-time
 as in previous versions. In order to circumvent this problem I created a separate
-class for this and defined via the appropriate command line option ```--initialize-at-build-time``` that this
+class for this and defined via the appropriate command line option `--initialize-at-build-time` that this
 particular class should be initialized at build time. This did the trick and it works now.
 
 == JavaFX/Native limitations
