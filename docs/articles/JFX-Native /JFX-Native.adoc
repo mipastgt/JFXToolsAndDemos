@@ -246,8 +246,13 @@ The system menu bar is currently not supported (see above).
 AWT is currently not supported. This would not be such a big deal if some features
 of JavaFX did not depend on it.
 
-* Image IO.
 * javafx.application.HostServices.showDocument (fails on Mac)
+
+See: https://github.com/gluonhq/substrate/issues/337
+
+Some other uses of AWT do work, e.g., image reading and writing. In order to save
+a JavaFX image it has to be converted to an AWT BufferedImage first, so that it can then
+be saved via ImageIO. That works although it is part of AWT.
 
 It would probably be a good idea in general to make JavaFX completely independent
 from AWT.
