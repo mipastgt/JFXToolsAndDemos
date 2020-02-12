@@ -1,6 +1,6 @@
 = Building native, AOT compiled, real-world JavaFX applications
 Dr.-Ing. Michael Paus, mpMediaSoft GmbH
-Version 1.0.2, 2020-02-12
+Version 1.0.3, 2020-02-12
 :doctype: article
 :encoding: utf-8
 :lang: en
@@ -251,6 +251,12 @@ of JavaFX did not depend on it.
 
 It would probably be a good idea in general to make JavaFX completely independent
 from AWT.
+
+=== Audio
+
+Playing AudioClips currently does not seem to work because the glib-lite library is missing.
+
+See: https://github.com/gluonhq/substrate/issues/336
 
 === Image size
 
