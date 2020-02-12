@@ -1,6 +1,6 @@
 = Building native, AOT compiled, real-world JavaFX applications
 Dr.-Ing. Michael Paus, mpMediaSoft GmbH
-Version 1.0.1, 2020-02-11
+Version 1.0.2, 2020-02-12
 :doctype: article
 :encoding: utf-8
 :lang: en
@@ -10,7 +10,7 @@ Version 1.0.1, 2020-02-11
 [.lead]
 A summary of my lessons learned converting an existing JavaFX application to a native,
 AOT compiled, real-world application using the Gluon Client Maven plugin which is based
-on the GraalVM native-image toolchain.
+on the GraalVM `native-image` toolchain.
 
 == Overview
 
@@ -46,7 +46,7 @@ to be on the Maven plugin.
 
 == Build infrastructure
 
-The GraalVM/native-image tool is very memory hungry. When your build times get longer
+The GraalVM `native-image` tool is very memory hungry. When your build times get longer
 and longer, you are probably running out of memory. My initial hello-world builds were
 mostly finished within 2 - 4 minutes but when I started to do bigger builds the times
 went up to 7, 22 and finally more than an hour. This turned out to be caused
@@ -62,7 +62,7 @@ Having a fast multi-core CPU also does not hurt. I have seen CPU utilizations of
 
 === Options
 
-It is advisable to use the following native-image options for the build:
+It is advisable to use the following `native-image` options for the build:
 
 * -ea
 * --verbose
@@ -76,9 +76,27 @@ The option `--verbose` makes the output of the build process more verbose and th
 case something goes wrong. As a build takes a while, it makes sense to always use this option
 so that you do not have to repeat the build in case something goes wrong and you don't know why.
 
+=== System properties
+
+When calling `native-image` you can define system properties but these are only
+visible to the VM during the build process but not later at run-time of the native
+application. This can cause some confusion because for classes which are initialized
+at build-time, these system properties would be defined, whereas for classes which are
+initialized at run-time they wouldn't.
+
+A concept, how they can be made visible at run-time too, is explained here
+https://github.com/oracle/graal/issues/779 but this does not seem to work anymore
+because classes are now initialized at run-time by default and not at build-time
+as in previous versions. In order to circumvent this problem I created a separate
+class for this and defined via the appropriate command line option `--initialize-at-build-time` that this
+particular class should be initialized at build time. This did the trick and it works now.
+
+NOTE: Don't try to be too smart when writing this class. Only write primitive code because
+otherwise `native-image` will refuse to initialize this class at build-time.
+
 == GraalVM/native-image limitations
 
-GraalVM/native-image still has several limitations which may bite you in real-world
+GraalVM `native-image` still has several limitations which may bite you in real-world
 projects. So I strongly advise you to read the following document which
 summarizes most of these limitations.
 
@@ -149,7 +167,7 @@ This has severe consequences for several libraries and frameworks.
 ==== Logging
 
 Logging frameworks are notorious users of all kind of reflection magic (I still don't understand why) which
-falls onto your feet when you use native-image. The worst of all is Log4J.
+falls onto your feet when you use `native-image`. The worst of all is Log4J.
 
 See: https://issues.apache.org/jira/browse/LOG4J2-2649?focusedCommentId=17005296&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-17005296
 
@@ -157,13 +175,13 @@ I finally had to completely abandon Log4J (and in retrospect I wonder why I have
 This switch was made easy for me by the fact that I have consistently used the SLF4J facade throughout all my
 software, so the only necessary change was the configuration of the logging framework and rewriting my own
 JFX logging handler. I finally ended up using the standard Java logging because that is supported out of the
-box with native-image. The simple variant of SLF4J also worked but it would have been more complicated to
+box with `native-image`. The simple variant of SLF4J also worked but it would have been more complicated to
 rewrite my JFX logging handler.
 
 ==== NSMenuFX
 
 Another library I used was NSMenuFX to get a decent system menu integration for the Mac, which JavaFX
-does not provide by default, but it failed with native-image. After a lot of research
+does not provide by default, but it failed with `native-image`. After a lot of research
 (thanks José https://github.com/gluonhq/substrate/issues/118 ) I finally learned that this is also due
 to the internal use of method handles.
 
@@ -190,7 +208,7 @@ I used a temporary RAM cache in my code which was based on Javas soft-references
 The result was that my native code felt slow and was not very responsive and I was
 actually very disappointed. Finally I found out that this happened because my cache
 was almost always empty and so my software had to load everything from disk over and over
-again. GraalVMs native-image handles references differently than the Java VM does, which
+again. GraalVMs `native-image` handles references differently than the Java VM does, which
 has the effect that all soft-references are always immediately cleared and thus became
 useless to me.
 
@@ -200,11 +218,11 @@ There is only one small sentence in the documentation which hints at this deviat
 
 NOTE: I learned from Laurent Bourgès that the MarlinFX renderer uses soft-references
 by default to hold its own renderer context. It should therefore be tuned for
-GraalVM/native-image to use hard references instead: `-Dprism.marlin.useRef=hard`
+GraalVM `native-image` to use hard references instead: `-Dprism.marlin.useRef=hard`
 
 === Single locale
 
-A severe, not very well documented, limitation of native-image is the fact that
+A severe, not very well documented, limitation of `native-image` is the fact that
 currently only one locale  is supported. You have to decide at build time which locale
 you want to use for your application. If you want to support more than one locale you
 have to build separate versions of your application. One for each supported locale.
@@ -214,21 +232,6 @@ this can have. In fact you cannot even parse a simple string value which does no
 adhere to the conventions of your chosen built-in locale.
 
 See: https://github.com/oracle/graal/issues/2141
-
-=== System properties
-
-When calling `native-image` you can define system properties but these are only
-visible to the VM during the build process but not later at run-time of the native
-application. This can cause some confusion because for classes which are initialized
-at build-time, these system properties would be defined, whereas for classes which are
-initialized at run-time they wouldn't.
-
-A concept, how they can be made visible at run-time too, is explained here
-https://github.com/oracle/graal/issues/779 but this does not seem to work anymore
-because classes are now initialized at run-time by default and not at build-time
-as in previous versions. In order to circumvent this problem I created a separate
-class for this and defined via the appropriate command line option `--initialize-at-build-time` that this
-particular class should be initialized at build time. This did the trick and it works now.
 
 == JavaFX/Native limitations
 
