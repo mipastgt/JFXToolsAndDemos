@@ -178,6 +178,9 @@ JFX logging handler. I finally ended up using the standard Java logging because 
 box with `native-image`. The simple variant of SLF4J also worked but it would have been more complicated to
 rewrite my JFX logging handler.
 
+One problem remains though. I simply can't get the FileHandler working.
+See: https://github.com/gluonhq/client-maven-plugin/issues/125
+
 ==== NSMenuFX
 
 Another library I used was NSMenuFX to get a decent system menu integration for the Mac, which JavaFX
@@ -233,7 +236,7 @@ adhere to the conventions of your chosen built-in locale.
 
 See: https://github.com/oracle/graal/issues/2141
 
-== JavaFX/Native limitations
+== JavaFX/Substrate limitations
 
 The JavaFX part of the native image creation currently also has some limitations.
 
@@ -269,10 +272,43 @@ The size of the created executable file currently seems to be quite big. In my c
 quite small application, the size is already 94 MB which is more than the whole
 .app bundle created by jpackage which has only 69.3 MB.
 
+== Special cases
+
+=== SQLite
+
+It took me some time to get SQLite working but in the end all I had to do is to add the
+following items to the POM.
+
+....
+<jniList>
+    <list>org.sqlite.core.DB</list>
+    <list>org.sqlite.core.NativeDB</list>
+    <list>org.sqlite.BusyHandler</list>
+    <list>org.sqlite.Function</list>
+    <list>org.sqlite.ProgressHandler</list>
+    <list>org.sqlite.Function$Aggregate</list>
+    <list>org.sqlite.Function$Window</list>
+    <list>org.sqlite.core.DB$ProgressObserver</list>
+</jniList>
+....
+
+....
+<resourcesList>
+    <list>org/sqlite/native/Mac/${os.arch}/.*</list> <!-- Only for SQLite -->
+</resourcesList>
+....
+
+The last entry is tricky. The path contains the platform specifc shared library
+of the native part of SQLite. (Change `Mac` to the right one for your platform.
+Just ${os.name} does not work.)
+
 == Open issues
 
-Besides all the issues mentioned above I still have to get SQLite working for the next
-steps. But this is still work in progress.
+=== Performance
+
+The performance of the community editon of `native-image` sometimes seems to have
+a much worse performance than a standard VM due to some missing code optimizations.
+See: https://github.com/bourgesl/perfFX
 
 == Conclusion
 
