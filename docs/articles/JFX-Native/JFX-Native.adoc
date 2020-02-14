@@ -1,6 +1,6 @@
 = Building native, AOT compiled, real-world JavaFX applications
 Dr.-Ing. Michael Paus, mpMediaSoft GmbH
-Version 1.0.4, 2020-02-14
+Version 1.0.5, 2020-02-14
 :doctype: article
 :encoding: utf-8
 :lang: en
