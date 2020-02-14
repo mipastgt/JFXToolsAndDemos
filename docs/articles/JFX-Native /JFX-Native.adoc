@@ -359,8 +359,9 @@ Some remarks on the table:
 * Also the warmup time of the Java VM could be further reduced via profile guided optimization.
 
 Taking all this into account, the real driver to use GraalVM/native-image is the promise that
-it will allow the use of the latest standard Java on mobile devices too. For a pure desktop
-environment it does not make much sense.
+it will allow the use of the latest standard Java/JavaFX on mobile devices too and thus make
+it possible to cover the mobile, embedded and desktop sector with a single code base.
+For a pure desktop environment it does not make much sense.
 
 == Conclusion
 
