@@ -1,6 +1,6 @@
 = Building native, AOT compiled, real-world JavaFX applications
 Dr.-Ing. Michael Paus, mpMediaSoft GmbH
-Version 1.0.3, 2020-02-12
+Version 1.0.4, 2020-02-14
 :doctype: article
 :encoding: utf-8
 :lang: en
@@ -94,7 +94,7 @@ particular class should be initialized at build time. This did the trick and it 
 NOTE: Don't try to be too smart when writing this class. Only write primitive code because
 otherwise `native-image` will refuse to initialize this class at build-time.
 
-== GraalVM/native-image limitations
+== GraalVM/native-image limitations and issues
 
 GraalVM `native-image` still has several limitations which may bite you in real-world
 projects. So I strongly advise you to read the following document which
@@ -236,7 +236,7 @@ adhere to the conventions of your chosen built-in locale.
 
 See: https://github.com/oracle/graal/issues/2141
 
-== JavaFX/Substrate limitations
+== JavaFX/Substrate limitations and issues
 
 The JavaFX part of the native image creation currently also has some limitations.
 
@@ -268,9 +268,17 @@ See: https://github.com/gluonhq/substrate/issues/336
 
 === Image size
 
-The size of the created executable file currently seems to be quite big. In my case, of a still
-quite small application, the size is already 94 MB which is more than the whole
-.app bundle created by jpackage which has only 69.3 MB.
+The size of the created executable file currently seems to be quite large. In my case, of a
+still quite small application, the size is already 100 MB, which is more than the whole
+.app bundle created by jpackage, which has only 75 MB. If I (or jlink) would put a bit more
+effort into it, the size of the .app bundle could even be substantially reduced further by
+more selectively loading code and resources and not just doing so on a whole module basis.
+
+=== Performance
+
+The performance of the community editon of `native-image` sometimes seems to be
+much worse than the standard VM with HotSpot due to some missing code optimizations.
+See: https://github.com/bourgesl/perfFX
 
 == Special cases
 
@@ -304,11 +312,55 @@ Just ${os.name} does not work.)
 
 == Open issues
 
-=== Performance
+== Java VM vs. GraalVM/native-image comparison
 
-The performance of the community editon of `native-image` sometimes seems to have
-a much worse performance than a standard VM due to some missing code optimizations.
-See: https://github.com/bourgesl/perfFX
+This is a subjective comparison of a standard Java VM (Oracle OpenJDK 14 EA)
+versus the GraalVM/native-image community edition (19.3.1 utilized by GluonHQ/substrate via
+Client-Maven-Plugin). 
+
+.Table Java VM vs. GraalVM/native-image comparison
+|===
+|Feature |Java VM |GraalVM/native-image 
+
+|Works on Mobile (iOS, Android)
+|-
+|+
+
+|Development experience
+|+
+|-
+
+|Feature completeness
+|+
+|0
+
+|Startup time
+|0
+|+
+
+|Warmup time
+|0
+|+
+
+|Peak performance
+|+
+|0
+
+|Bundle size
+|0
+|-
+|===
+
+Some remarks on the table:
+
+* The startup time of the Java VM could be further reduced if AppCDS would also work for reduced
+  runtime images created via jlink. The current advantage of AOT compilation could be reduced in
+  this respect.
+* Also the warmup time of the Java VM could be further reduced via profile guided optimization.
+
+Taking all this into account, the real driver to use GraalVM/native-image is the promise that
+it will allow the use of the latest standard Java on mobile devices too. For a pure desktop
+environment it does not make much sense.
 
 == Conclusion
 
@@ -317,5 +369,6 @@ application compiled into a native image. If I have missed something important o
 you can help me with one of the open issues, just drop me a line or create an issue here.
 
 Once you have circumvented all the mentioned problems, the resulting binary seems to be
-quite stable and the performance is also very good. So, I am looking forward to do the next
+quite stable and the performance is also relatively good. So, I am looking forward to do the next
 step and compile the whole application as an Android app.
+
