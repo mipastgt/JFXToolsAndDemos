@@ -1,6 +1,6 @@
 = Building native, AOT compiled, real-world JavaFX applications
 Dr.-Ing. Michael Paus, mpMediaSoft GmbH
-Version 1.0.5, 2020-02-14
+Version 1.0.6, 2020-02-15
 :doctype: article
 :encoding: utf-8
 :lang: en
@@ -322,7 +322,8 @@ Client-Maven-Plugin).
 |===
 |Feature |Java VM |GraalVM/native-image 
 
-|Works on Mobile (iOS, Android)
+|Works on Mobile +
+(iOS, Android)
 |-
 |+
 
