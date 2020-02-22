@@ -312,6 +312,47 @@ Just ${os.name} does not work.)
 
 == Open issues
 
+=== Fully or partially blank panes
+
+When something goes wrong during the initialization of a view, I often have the situation
+that I am just confronted with a blank stage or pane without any error message or stack trace.
+It is then very difficult to track down what the actual cause of the problem is. I mostly
+have this problem when initializing views via FXML.
+
+=== FXML
+
+The use of FXML is a PITA. All classes are loaded via reflection and so must be
+present in the final reflection list. Some classes are already included in this list
+by default, others (most ?) must be added manually. I finally adopted the habbit to
+just copy the `import` section of each FXML file because there you already have a list
+of all classes used by this file if this file was created by SceneBuilder which luckily
+does not use the wildcard notation.
+
+Another annoying problem is that sometimes it is not sufficient to just put the class you
+want to load into this list. E.g., if you want to load a ProgressBar and have put this
+class into the refection list, you will still get the following error: 
+`ProgressBar Property "progress" does not exist or is read-only`.
+The reason is that the property "progress" is defined in the super-class of ProgressBar
+and so you have to specify ProgressIndicator as well.
+
+=== UnsatisfiedLinkErrors
+
+Some native libraries seem to be missing from substrate and so you will get UnsatisfiedLinkErrors.
+
+* java.util.logging.FileHandler +
+  See: https://github.com/gluonhq/client-maven-plugin/issues/125
+* com.sun.imageio.plugins.jpeg.JPEGImageReader +
+  symbol: Java_com_sun_imageio_plugins_jpeg_JPEGImageReader_initJPEGImageReader or Java_com_sun_imageio_plugins_jpeg_JPEGImageReader_initJPEGImageReader__
+* no jfxwebkit in java.library.path
+
+=== Misleading error messages
+
+Very often the error messages you get are very misleading.
+At a first glance an error message like `java.lang.IllegalArgumentException: Unable to coerce CENTER to class javafx.geometry.HPos.`
+is very cunfusing because CENTER definitely is a valid member of HPos. The actual reason for this
+error message is that `javafx.geometry.HPos` is just missing in the reflection list. Error messages
+should give a more precise hint on the real cause for an error.
+
 == Java VM vs. GraalVM/native-image comparison
 
 This is a subjective comparison of a standard Java VM (Oracle OpenJDK 14 EA)
