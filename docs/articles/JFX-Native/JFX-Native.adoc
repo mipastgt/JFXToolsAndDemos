@@ -1,6 +1,6 @@
 = Building native, AOT compiled, real-world JavaFX applications
 Dr.-Ing. Michael Paus, mpMediaSoft GmbH
-Version 1.0.7, 2020-02-22
+Version 1.0.8, 2020-02-23
 :doctype: article
 :encoding: utf-8
 :lang: en
@@ -356,10 +356,19 @@ should give a more precise hint on the real cause for an error.
 === JAXB
 
 For me JAXB is the workhorse for dealing with XML files but this seems to be a hard problem
-for GraalVM/native-image. Until now I have not found a solution for this and thus cannot
-read or write any XML files which limits the usability of the software quite a bit.
+for GraalVM/native-image. 
 
 See: https://github.com/oracle/graal/issues/379
+
+I got this working in a separte test program for some GPX files by following the hints in the above link.
+I can now read and write such files. (At least the ones I have tested, but that is another issue.)
+
+However, this involves the use of the tracing agent which is currently not supported by the Client-Maven-Plugin
+and when I tried to transfer the results of the agent manually I got stuck because there is currently also
+no proxy list support.
+
+Until now I have not found a solution for this and thus cannot read or write any XML files in my real software,
+which limits its usability quite a bit.
 
 == Java VM vs. GraalVM/native-image comparison
 
