@@ -1,6 +1,6 @@
 = Bundling real-world JavaFX applications
 Dr.-Ing. Michael Paus, mpMediaSoft GmbH
-Version 1.0.0, 2020-02-16
+Version 1.1.0, 2020-02-23
 :doctype: article
 :encoding: utf-8
 :lang: en
@@ -21,35 +21,40 @@ resulting from the various bundling techniques.
 |Technique |Size
 
 |jpackage
-|220.7 MB
+|200.6 MB
 
 |jpackage + jlink
-|75.9 MB
+|73.8 MB
+
+|jpackage + jlink + +
+ Maven shade with minimizeJar
+|58.8 MB
 
 |native
-|100.3 MB
+|98.7 MB
 |===
 
 In this table the following techniques are compared:
 
 * jpackage
-  ** Pure jpackage bundling its own JRE (14 EA)
+  ** Pure jpackage bundling the standard JRE (11)
 * jpackage + jlink
-  ** Jpackage bundling a custom JRE (14 EA) created via jlink.
+  ** Jpackage bundling a custom JRE created via jlink (11, customized via jpeps).
+* jpackage + jlink + Maven shade with minimizeJar
+  ** Jpackage bundling a shrinked uber-jar with a custom JRE created via jlink (11, customized via jpeps).
 * native
-  ** GluonHQ client-maven-plugin + substrate building on GraalVM/native-image (19.3.1)
+  ** GluonHQ client-maven-plugin + substrate building on GraalVM/native-image (20.0.0)
   
-The jpackage + jlink variant could be further improved because the library folder allone,
-which contains all the external jars which are linked, has a size of almost 35 MB and from
-many jars I only use a tiny fraction of their whole content.
+The jpackage variants could be further improved if one would also shrink the JDK part,
+which jlink does only on a whole module basis but not for individual classes or even methods.
 
-I will try to further shrink that via ProGuard. If that could also be applied to the JRE
-itself, then I am pretty sure that the total size could be brought down to less than 40 MB.
+I will try to further shrink that via ProGuard but this is complicated by the fact
+that the JDK is not packaged as a JAR file anymore. I am pretty sure that the total size could be brought down to less than 40 MB.
 
 The native variant is in this respect disappointing though. All the potential optimizations
 that a tool like ProGuard could still apply to the other variants are, according to the
-documentation, already done by the native variant, which leaves no more opportinity for
-furhter optimizations.
+documentation, already done by the native variant, which leaves no more opportunity for
+further optimizations.
 In addition to that the native variant is not even feature complete. E.g., it only supports
-a single locale which of course reduces the size of the resulting bundle in a non-acceptable way. Some normally used
-code is also not included because it is currently not supported.
+a single locale which of course reduces the size of the resulting bundle in a non-acceptable way.
+Some normally used code is also not included because it is currently not supported.

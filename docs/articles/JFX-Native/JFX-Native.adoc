@@ -1,6 +1,6 @@
 = Building native, AOT compiled, real-world JavaFX applications
 Dr.-Ing. Michael Paus, mpMediaSoft GmbH
-Version 1.0.8, 2020-02-23
+Version 1.1.0, 2020-02-23
 :doctype: article
 :encoding: utf-8
 :lang: en
@@ -270,9 +270,12 @@ See: https://github.com/gluonhq/substrate/issues/336
 
 The size of the created executable file currently seems to be quite large. In my case, of a
 still quite small application, the size is already 100 MB, which is more than the whole
-.app bundle created by jpackage, which has only 75 MB. If I (or jlink) would put a bit more
-effort into it, the size of the .app bundle could even be substantially reduced further by
-more selectively loading code and resources and not just doing so on a whole module basis.
+.app bundle created by jpackage, which has only 73.8 MB if I bundle everything or only 58.8 MB
+if I use the Maven shade plugin with the option minimizeJar switched on.
+
+If jlink would put a bit more effort into it, the size of the .app bundle could even be
+further reduced substantially by more selectively loading code and resources and not just
+doing so on a whole module basis.
 
 === Performance
 
@@ -373,7 +376,7 @@ which limits its usability quite a bit.
 == Java VM vs. GraalVM/native-image comparison
 
 This is a subjective comparison of a standard Java VM (Oracle OpenJDK 14 EA)
-versus the GraalVM/native-image community edition (19.3.1 utilized by GluonHQ/substrate via
+versus the GraalVM/native-image community edition (20.0.0 utilized by GluonHQ/substrate via
 Client-Maven-Plugin). 
 
 .Table Java VM vs. GraalVM/native-image comparison
