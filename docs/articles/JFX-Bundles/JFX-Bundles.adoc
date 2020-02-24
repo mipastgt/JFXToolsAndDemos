@@ -1,6 +1,6 @@
 = Bundling real-world JavaFX applications
 Dr.-Ing. Michael Paus, mpMediaSoft GmbH
-Version 1.1.0, 2020-02-23
+Version 1.1.1, 2020-02-23
 :doctype: article
 :encoding: utf-8
 :lang: en
@@ -28,7 +28,7 @@ resulting from the various bundling techniques.
 
 |jpackage + jlink + +
  Maven shade with minimizeJar
-|58.8 MB
+|57.9 MB
 
 |native
 |98.7 MB
