@@ -331,6 +331,11 @@ just copy the `import` section of each FXML file because there you already have 
 of all classes used by this file if this file was created by SceneBuilder which luckily
 does not use the wildcard notation.
 
+In order to make this task at least a little bit less cumbersome, I have written a
+tool for myself to collect this information. I have published it on GitHub, just in case
+someone has the same need for such a tool like I had. It is not perfect but it helps a little.
+https://github.com/mipastgt/JFXToolsAndDemos#fxml-checker
+
 Another annoying problem is that sometimes it is not sufficient to just put the class you
 want to load into this list. E.g., if you want to load a ProgressBar and have put this
 class into the refection list, you will still get the following error: 
