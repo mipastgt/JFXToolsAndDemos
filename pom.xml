@@ -88,6 +88,7 @@
 	</dependencies>
 
 	<modules>
+		<module>jfxtools-jarprocessor</module>
 		<module>jfxtools-vlcjfx</module>
 		<module>jfxtools-vlcjfx-demos</module>
 		<module>jfxtools-awtimage</module>

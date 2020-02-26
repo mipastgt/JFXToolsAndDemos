@@ -12,6 +12,42 @@ mvn clean install
 
 ## Modules
 
+### JARProcessor
+
+A simple tool to analyze and process jar files. Currently two processors are implemented.
+
+#### Module checker
+
+This jar-processor analyzes a list of jar-files and lists all services provided
+by the contained code.
+
+It further checks whether the contained code is modular or non-modular. If it is
+modular, it checks if the service delarations for the module-path are consistent
+with the declarations for the classpath.
+
+Example:
+
+```
+mvn exec:java -pl jfxtools-jarprocessor -Dexec.args="ModuleChecker -v module1.jar module2.jar ..."
+```
+
+#### FXML checker
+
+This jar-processor analyzes a list of jar-files and lists all FXML files
+contained in each file.
+
+It further examines all import statements of the FXML files and finally
+prints out a combined list of all classes loaded by all the jar files.
+This is useful for tools like the maven shade plugin, ProGuard of GluonHQs
+client-maven-plugin for which you have to provide a list of all classes
+which have to be kept but which cannot be found by static analysis of the
+code.
+Example:
+
+```
+mvn exec:java -pl jfxtools-jarprocessor -Dexec.args="FXMLChecker -v -n module1.jar module2.jar ..."
+```
+
 ### VLCJFXVideoPlayer
 
 This is a very simple example of a video player which uses the new WritableImage
