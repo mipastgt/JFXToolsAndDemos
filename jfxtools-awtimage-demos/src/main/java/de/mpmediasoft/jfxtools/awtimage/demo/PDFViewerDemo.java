@@ -3,6 +3,9 @@ package de.mpmediasoft.jfxtools.awtimage.demo;
 import java.awt.Graphics2D;
 import java.io.File;
 import java.io.IOException;
+import java.util.Locale;
+
+import javax.imageio.ImageIO;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -14,9 +17,12 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ColorPicker;
 import javafx.scene.control.ToolBar;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -30,15 +36,15 @@ public class PDFViewerDemo extends Application {
     
     private final static int IMAGE_WIDTH = 1280;
     private final static int IMAGE_HEIGHT = 720;
-    
-    private final static java.awt.Color awtBackgroundColor = java.awt.Color.WHITE;
-    
+       
     private ImageView imageView;
 	private AWTImage awtImage;	
     private PDDocument document;    
     private PDFRenderer pdfRenderer;
     private int pageIndex;
     private FileChooser fileChooser;
+    private File pdfFile = null;
+    private Color backgroundColor = Color.WHITE;
     
 	@Override
 	public void init() {
@@ -51,26 +57,43 @@ public class PDFViewerDemo extends Application {
         fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("PDF files (*.pdf)", "*.pdf"));
         Button selectPDFButton = new Button("Select PDF");
+        selectPDFButton.setTooltip(new Tooltip("Select a PDF file."));
         selectPDFButton.setOnAction(e -> {
-            File pdfFile = fileChooser.showOpenDialog(primaryStage);
+            pdfFile = fileChooser.showOpenDialog(primaryStage);
             if (pdfFile != null) {
                 open(pdfFile);
             }
         });
         
         Button pageBackwardButton = new Button("<");
+        pageBackwardButton.setTooltip(new Tooltip("Page backward."));
         pageBackwardButton.setOnAction(e -> {
             pageIndex = Math.max(pageIndex - 1, 0);
             awtImage.update();
         });
         
         Button pageForwardButton = new Button(">");
+        pageForwardButton.setTooltip(new Tooltip("Page forward."));
         pageForwardButton.setOnAction(e -> {
             pageIndex = Math.min(pageIndex + 1, document.getNumberOfPages() - 1);
             awtImage.update();
         });
         
-		ToolBar toolbar = new ToolBar(selectPDFButton, pageBackwardButton, pageForwardButton);
+        Button saveAsPNGButton = new Button("Save");
+        saveAsPNGButton.setTooltip(new Tooltip("Save rendered page as PNG image."));
+        saveAsPNGButton.setOnAction(e -> {
+            saveAsPNG(pdfFile);
+        });
+        
+        ColorPicker colorPicker = new ColorPicker();
+        colorPicker.setTooltip(new Tooltip("Select background color."));
+        colorPicker.setValue(backgroundColor);
+        colorPicker.setOnAction(a -> {
+            backgroundColor = colorPicker.getValue();
+            render();
+        });
+        
+		ToolBar toolbar = new ToolBar(selectPDFButton, pageBackwardButton, pageForwardButton, saveAsPNGButton, colorPicker);
 		
 		BorderPane root = new BorderPane();
 		root.setTop(toolbar);
@@ -89,18 +112,34 @@ public class PDFViewerDemo extends Application {
             Parameters params = getParameters();
             if (params.getRaw().size() > 0) {
                 String pdfFileName = params.getRaw().get(0);
-                open(new File(pdfFileName));
+                pdfFile = new File(pdfFileName);
+                open(pdfFile);
             }
         });
 	}
 	
 	private void open(File pdfFile) {
         try {
-            if (pdfFile.canRead()) {
+            if (pdfFile != null && pdfFile.canRead()) {
                 if (document != null) document.close();
                 document = PDDocument.load(pdfFile);
                 pdfRenderer = new PDFRenderer(document);
                 pdfRenderer.setSubsamplingAllowed(true);
+                
+                render();
+            } else {
+                System.err.println("No valid PDF document selected.");
+                System.err.println("pdfFile: " + pdfFile);
+                Platform.exit();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+	}
+	
+    private void render() {
+        try {
+            if (pdfRenderer != null) {
                 pageIndex = 0;
                 
                 if (awtImage == null) {
@@ -122,8 +161,14 @@ public class PDFViewerDemo extends Application {
                             
                             Graphics2D g2 = (Graphics2D) awtImage.getAWTImage().getGraphics();
                             // Set background for transparent pages
+                            java.awt.Color awtBackgroundColor = new java.awt.Color(
+                                (float)backgroundColor.getRed(),
+                                (float)backgroundColor.getGreen(),
+                                (float)backgroundColor.getBlue(),
+                                (float)backgroundColor.getOpacity());
                             g2.setBackground(awtBackgroundColor);
-                            g2.fillRect(0, 0, awtImage.getWidth(), awtImage.getHeight());
+                            g2.clearRect(0, 0, awtImage.getWidth(), awtImage.getHeight());
+                            
                             // Render the selected page
                             pdfRenderer.renderPageToGraphics(pageIndex, g2, scale);
                             g2.dispose();
@@ -137,17 +182,32 @@ public class PDFViewerDemo extends Application {
                 }
                 
                 awtImage.update();
-            } else {
-                System.err.println("The first argument of the main program must be a valid path to a PDF document.");
-                System.err.println("pdfFile: " + pdfFile);
-                Platform.exit();
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+    
+	private void saveAsPNG(File pdfFile) {
+    	try {
+    	    if (pdfFile != null && pdfFile.canRead()) {
+    	        File parent = pdfFile.getParentFile();
+                String pdfFileName = pdfFile.getName();
+                String baseFileName = pdfFileName.substring(0, pdfFileName.lastIndexOf('.'));
+                File pngFile = new File(parent, baseFileName + ".png");
+    	        ImageIO.write(awtImage.getAWTImage(), "png", pngFile);
+    	        System.out.println("PNG file written to: " + pngFile);
+    	    } else {
+                System.err.println("No valid PDF document selected.");
+    	    }
+    	} catch (Exception e) {
+            e.printStackTrace();
+    	}
 	}
+	 
 
 	public static void main(String[] args) {
+	    Locale.setDefault(Locale.US);
 		launch(args);
 	}
 
