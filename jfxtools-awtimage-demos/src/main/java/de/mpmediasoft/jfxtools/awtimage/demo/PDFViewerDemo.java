@@ -148,12 +148,14 @@ public class PDFViewerDemo extends Application {
                     awtImage.setOnUpdate(g2d -> {
                         try {
                             PDPage page = document.getPage(pageIndex);
-                            PDRectangle cropbBox = page.getCropBox();
-                            float widthPt = cropbBox.getWidth();
+                            
+                            PDRectangle cropBox = page.getCropBox();
+                            
+                            float widthPt = cropBox.getWidth();
                             float widthPix = awtImage.getWidth();
                             float scaleX = widthPix / widthPt;
                             
-                            float heightPt = cropbBox.getHeight();
+                            float heightPt = cropBox.getHeight();
                             float heightPix = awtImage.getHeight();
                             float scaleY = heightPix / heightPt;
                             
