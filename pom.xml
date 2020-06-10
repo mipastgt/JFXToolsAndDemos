@@ -25,7 +25,7 @@
 		
 		<jfxtools.version>1.0.0</jfxtools.version>		
         <openjdk.version>11</openjdk.version>
-        <openjfx.version>15-ea+5</openjfx.version>
+        <openjfx.version>15-ea+6</openjfx.version>
 	</properties>
 
 	<build>
