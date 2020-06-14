@@ -1,4 +1,4 @@
-= Building a native pure JavaFX Android applications
+= Building a native, pure JavaFX Android application
 Dr.-Ing. Michael Paus, mpMediaSoft GmbH
 Version 1.0.0, 2020-06-14
 :doctype: article
