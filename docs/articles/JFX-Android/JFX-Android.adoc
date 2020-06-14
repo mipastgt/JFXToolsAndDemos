@@ -114,7 +114,7 @@ No special Android version is needed.
 * commons-io
 * commons-lang3
 * commons-math3
-* earth-gravitatinal-model
+* earth-gravitational-model
 * GeographicLib
 * plus all the JavaFX-specific libraries from OpenJFX/Gluon
 
