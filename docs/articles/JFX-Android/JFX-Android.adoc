@@ -103,7 +103,7 @@ an own-ship symbol and will be rotated according to the current bearing
 === Libraries
 
 This first, still relatively simple application already uses several external libraries
-which can all be used in their standard implemenation right from the Maven repository.
+which can all be used in their standard implementation right from the Maven repository.
 No special Android version is needed.
 
 * slf4j
