@@ -1,6 +1,6 @@
 = Building a native, pure JavaFX Android application
 Dr.-Ing. Michael Paus, mpMediaSoft GmbH
-Version 1.0.0, 2020-06-14
+Version 1.1.0, 2020-06-21
 :doctype: article
 :encoding: utf-8
 :lang: en
@@ -98,6 +98,14 @@ an own-ship symbol and will be rotated according to the current bearing
 (track-up mode).
 --
 
+[.float-group]
+--
+[.left]
+.Map settings.
+image::images/006-mpcopilotapp2.png[Map settings, 400, 400]
+
+On the map settings page you can manage the locally installed maps and select one map as the current map. The image shows the view while it is just downloading the map for Austria. The colors of the progress bar indicate the status of the respective map. The load/unload buttons on the left are disabled while a download is running in the background.
+--
 == Software
 
 === Libraries
