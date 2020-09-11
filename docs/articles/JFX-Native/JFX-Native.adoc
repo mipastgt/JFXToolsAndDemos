@@ -1,6 +1,6 @@
 = Building native, AOT compiled, real-world JavaFX applications
 Dr.-Ing. Michael Paus, mpMediaSoft GmbH
-Version 1.1.0, 2020-02-23
+Version 1.2.0, 2020-09-11
 :doctype: article
 :encoding: utf-8
 :lang: en
@@ -206,6 +206,8 @@ to justify a switch to another fast serialization technique.)
 https://github.com/oracle/graal/blob/master/substratevm/LIMITATIONS.md#serialization
 
 === Soft references
+
+(This issue seems to be fixed now: https://github.com/oracle/graal/issues/2145)
 
 I used a temporary RAM cache in my code which was based on Javas soft-references.
 The result was that my native code felt slow and was not very responsive and I was
