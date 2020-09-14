@@ -1,6 +1,6 @@
 = Building native, AOT compiled, real-world JavaFX applications
 Dr.-Ing. Michael Paus, mpMediaSoft GmbH
-Version 1.2.0, 2020-09-11
+Version 1.2.1, 2020-09-14
 :doctype: article
 :encoding: utf-8
 :lang: en
@@ -107,7 +107,8 @@ The ones I stumbled over most often where:
 * Reflection configuration (Everywhere)
 * Method Handles not supported (Log4J, NSMenuFX)
 * Serialization not supported (Disk cache)
-* Soft-References not working as expected (RAM cache)
+* Soft-References not working as expected (RAM cache) +
+(This issue seems to be fixed now: https://github.com/oracle/graal/issues/2145)
 
 I'll go into more details in the following sections.
 
