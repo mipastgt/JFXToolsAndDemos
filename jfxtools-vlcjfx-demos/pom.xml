@@ -18,9 +18,23 @@
                 <version>1.6.0</version>
                 <executions>
                     <execution>
+                        <id>vlcjfx-demo1</id>
                         <goals>
                             <goal>java</goal>
                         </goals>
+                        <configuration>
+                            <mainClass>de.mpmediasoft.jfxtools.vlcjfx.demo.VLCJFXVideoPlayerDemo1Launcher</mainClass>
+                        </configuration>
+                    </execution>
+                    
+                    <execution>
+                        <id>vlcjfx-demo2</id>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                        <configuration>
+                            <mainClass>de.mpmediasoft.jfxtools.vlcjfx.demo.VLCJFXVideoPlayerDemo2Launcher</mainClass>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>                                   

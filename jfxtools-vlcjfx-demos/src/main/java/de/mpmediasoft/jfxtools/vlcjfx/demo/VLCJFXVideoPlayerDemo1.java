@@ -22,9 +22,8 @@ public class VLCJFXVideoPlayerDemo1 extends Application {
 
     private static final String VIDEO_FILE =
 //        "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4";
-//        "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4";
+        "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4";
 //        "http://ftp.nluug.nl/pub/graphics/blender/demo/movies/ToS/tearsofsteel_4k.mov";
-        "/Users/mpaus/Downloads/tmp/tearsofsteel_4k.mov";
         
     private final double WIDTH = 1200;
     private final double HEIGHT = 675;

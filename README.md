@@ -75,13 +75,13 @@ Other dependencies can be found in the pom.xml.
 From the top-level project directory call:
 
 ```
-mvn exec:java -pl jfxtools-vlcjfx-demos -Dexec.mainClass=de.mpmediasoft.jfxtools.vlcjfx.demo.VLCJFXVideoPlayerDemo1Launcher
+mvn exec:java@vlcjfx-demo1 -pl jfxtools-vlcjfx-demos
 ```
 
 or
 
 ```
-mvn exec:java -pl jfxtools-vlcjfx-demos -Dexec.mainClass=de.mpmediasoft.jfxtools.vlcjfx.demo.VLCJFXVideoPlayerDemo2Launcher
+mvn exec:java@vlcjfx-demo2 -pl jfxtools-vlcjfx-demos
 ```
 
 ### AWTImage
@@ -100,13 +100,19 @@ and the second one utilizes AWTImage to build a little JavaFX PDF viewer based o
 From the top-level project directory call:
 
 ```
-mvn exec:java -pl jfxtools-awtimage-demos -Dexec.mainClass=de.mpmediasoft.jfxtools.awtimage.demo.AWTImageDemo
+mvn exec:java@AWTImageDemo -pl jfxtools-awtimage-demos
 ```
 
 or
 
 ```
-mvn exec:java -pl jfxtools-awtimage-demos -Dexec.mainClass=de.mpmediasoft.jfxtools.awtimage.demo.PDFViewerDemo"
+mvn exec:java@PDFViewerDemo -pl jfxtools-awtimage-demos
+```
+
+or
+
+```
+mvn exec:java@PDFViewerDemo2 -pl jfxtools-awtimage-demos
 ```
 
 ### NativeRenderingCanvas

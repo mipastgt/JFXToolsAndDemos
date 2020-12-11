@@ -18,9 +18,33 @@
                 <version>1.6.0</version>
                 <executions>
                     <execution>
+                        <id>AWTImageDemo</id>
                         <goals>
                             <goal>java</goal>
                         </goals>
+                        <configuration>
+                            <mainClass>de.mpmediasoft.jfxtools.awtimage.demo.AWTImageDemoLauncher</mainClass>
+                        </configuration>
+                    </execution>
+                    
+                    <execution>
+                        <id>PDFViewerDemo</id>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                        <configuration>
+                            <mainClass>de.mpmediasoft.jfxtools.awtimage.demo.PDFViewerDemo</mainClass>
+                        </configuration>
+                    </execution>
+                    
+                    <execution>
+                        <id>PDFViewerDemo2</id>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                        <configuration>
+                            <mainClass>de.mpmediasoft.jfxtools.awtimage.demo.PDFViewerDemo2</mainClass>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>                                   
