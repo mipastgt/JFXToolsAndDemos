@@ -14,22 +14,22 @@
       <dependency>
         <groupId>uk.co.caprica</groupId>
         <artifactId>vlcj</artifactId>
-        <version>4.2.0</version>
+        <version>4.7.0</version>
       </dependency>
 	</dependencies>
 	
 	
-	<repositories>	
-		<repository>
-			<id>oss.sonatype.org-snapshot</id>
-			<url>http://oss.sonatype.org/content/repositories/snapshots</url>
-			<releases>
-				<enabled>false</enabled>
-			</releases>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-    	</repository>
-	</repositories>	
+<!-- 	<repositories>	 -->
+<!-- 		<repository> -->
+<!-- 			<id>oss.sonatype.org-snapshot</id> -->
+<!-- 			<url>http://oss.sonatype.org/content/repositories/snapshots</url> -->
+<!-- 			<releases> -->
+<!-- 				<enabled>false</enabled> -->
+<!-- 			</releases> -->
+<!-- 			<snapshots> -->
+<!-- 				<enabled>true</enabled> -->
+<!-- 			</snapshots> -->
+<!--     	</repository> -->
+<!-- 	</repositories>	 -->
 	
 </project>
