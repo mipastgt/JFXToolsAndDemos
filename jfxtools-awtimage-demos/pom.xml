@@ -57,6 +57,13 @@
 			<artifactId>jfxtools-awtimage</artifactId>
 			<version>${jfxtools.version}</version>
 		</dependency>
+    
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-swing</artifactId>
+            <version>${openjfx.version}</version>
+        </dependency>
+    
 		<dependency>
 			<groupId>org.apache.pdfbox</groupId>
 			<artifactId>pdfbox</artifactId>

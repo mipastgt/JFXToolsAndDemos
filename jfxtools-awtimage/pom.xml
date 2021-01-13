@@ -9,13 +9,4 @@
 		<version>1.0.0</version>
 	</parent>
 	<artifactId>jfxtools-awtimage</artifactId>
-	
-	
-    <dependencies>
-        <dependency>
-            <groupId>org.openjfx</groupId>
-            <artifactId>javafx-swing</artifactId>
-            <version>${openjfx.version}</version>
-        </dependency>
-    </dependencies>
 </project>
