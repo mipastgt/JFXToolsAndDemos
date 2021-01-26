@@ -1,0 +1,40 @@
+= Articles about various topics
+Dr.-Ing. Michael Paus, mpMediaSoft GmbH
+Version 1.0.0, 2021-01-23
+:doctype: article
+:encoding: utf-8
+:lang: en
+:toc: left
+:numbered:
+:ext-relative: .html
+
+[.lead]
+Articles about various topics, mostly related to Java, JavaFX and GraalVM/Native-image.
+
+[NOTE]
+====
+Scroll down for the latest articles.
+====
+
+== Building native, AOT compiled, real-world JavaFX applications
+
+A summary of my lessons learned converting an existing JavaFX application to a native,
+AOT compiled, real-world application using the Gluon Client Maven plugin which is based
+on the GraalVM `native-image` toolchain.
+
+link:JFX-Native/JFX-Native{ext-relative}[Building native, AOT compiled, real-world JavaFX applications]
+
+== Bundling real-world JavaFX applications
+
+A summary of my lessons learned bundling real-world JavaFX application with
+various different techniques.
+
+link:JFX-Bundles/JFX-Bundles{ext-relative}[Bundling real-world JavaFX applications]
+
+== JavaFX on Android
+
+A summary of my lessons learned building a first, still simple, pure JavaFX Android
+application based on the components of an already existing JavaFX application using
+the Gluon Client Maven plugin which is based on the GraalVM `native-image` toolchain.
+
+link:JFX-Android/JFX-Android{ext-relative}[JavaFX on Android]
