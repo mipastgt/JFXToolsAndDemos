@@ -1,6 +1,6 @@
 = Bundling real-world JavaFX applications
 Dr.-Ing. Michael Paus, mpMediaSoft GmbH
-Version 1.1.1, 2020-02-23
+Version 2.0.1, 2021-01-31
 :doctype: article
 :encoding: utf-8
 :lang: en
@@ -8,53 +8,79 @@ Version 1.1.1, 2020-02-23
 :numbered:
 
 [.lead]
-A summary of my lessons learned bundling real-world JavaFX application with
+A summary of my lessons learned bundling a real-world JavaFX application with
 various different techniques.
 
 == Bundle sizes
 
-The following table shows the resulting executable bundle sizes (not installer bundles)
-resulting from the various bundling techniques.
+The following table shows the resulting executable bundle sizes (application bundle and installer bundles) resulting from the various bundling techniques.
 
-.Table Bundle sizes
+.Bundle sizes for packaged application.
 |===
-|Technique |Size
+|Technique |Size (.app) |Size (.dmg)
 
 |jpackage
-|200.6 MB
+|210.9 MB
+|132.0 MB
 
 |jpackage + jlink
-|73.8 MB
+|126.4 MB
+|109.2 MB
 
 |jpackage + jlink + +
  Maven shade with minimizeJar
-|57.9 MB
-
-|native
-|98.7 MB
+|<100 MB (currently not available)
+|<100 MB (currently not available)
 |===
 
 In this table the following techniques are compared:
 
 * jpackage
-  ** Pure jpackage bundling the standard JRE (11)
+  ** Pure jpackage bundling the standard JRE (17-ea+6)
 * jpackage + jlink
-  ** Jpackage bundling a custom JRE created via jlink (11, customized via jpeps).
+  ** Jpackage bundling a custom JRE created via jlink (17-ea+6, customized via jdeps).
 * jpackage + jlink + Maven shade with minimizeJar
-  ** Jpackage bundling a shrinked uber-jar with a custom JRE created via jlink (11, customized via jpeps).
-* native
-  ** GluonHQ client-maven-plugin + substrate building on GraalVM/native-image (20.0.0)
+  ** Jpackage bundling a shrinked uber-jar with a custom JRE created via jlink (17-ea+6, customized via jdeps).
   
+The next table shows the resulting executable native-image sizes.
+  
+.Native image sizes.
+|===
+|Technique |Size
+
+|Original
+|134.8 MB
+
+|UPX
+|44.9 MB
+
+|UPX --best
+|42.4 MB
+|===
+
+In this table the following techniques are compared:
+
+* Original
+  ** GluonHQ client-maven-plugin + substrate building on GraalVM/native-image (21.0.0)
+* UPX
+  ** Original compressed with UPX
+* UPX --best
+  ** Original compressed with UPX --best (takes very long)
+  
+== Discussion
+
 The jpackage variants could be further improved if one would also shrink the JDK part,
 which jlink does only on a whole module basis but not for individual classes or even methods.
 
 I will try to further shrink that via ProGuard but this is complicated by the fact
-that the JDK is not packaged as a JAR file anymore. I am pretty sure that the total size could be brought down to less than 40 MB.
+that the JDK is not packaged as a JAR file anymore. I am pretty sure though that the total size can be brought down to less than 50 MB if all optimization potential is exploited.
 
-The native variant is in this respect disappointing though. All the potential optimizations
+The original native variant is in this respect disappointing though. All the potential optimizations
 that a tool like ProGuard could still apply to the other variants are, according to the
 documentation, already done by the native variant, which leaves no more opportunity for
 further optimizations.
 In addition to that the native variant is not even feature complete. E.g., it only supports
 a single locale which of course reduces the size of the resulting bundle in a non-acceptable way.
 Some normally used code is also not included because it is currently not supported.
+
+A further possibility is to compress the native image with a tool like UPX (the Ultimate Packer for eXecutables, https://upx.github.io/). This brings down the native image size substantially and I haven't observed any noticable impact on the startup speed. So, this seems the way to go here for me. With UPX applied, this is currently the variant which provides the smallest image size and best startup speed.
