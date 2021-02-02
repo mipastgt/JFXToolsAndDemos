@@ -1,0 +1,26 @@
+== Missing features for Gluon/GraalVM/native-image toolchain
+
+=== Missing support for more than one locale
+* https://github.com/oracle/graal/issues/2908
+
+=== Media
+* No media support on some platforms
+
+=== NSMenuFX
+* The platform menu bar isn't supported yet. (VERIFY)
+* The new version has problems with the JNA library.
+
+=== Configuration too complicated and error prone
+* Integrate native image agent into workflow.
+  (Does it conflict with the default config options?)
+
+=== Native images far too big to be useful
+* UPX to the rescue
+* This could be a unique selling point for JavaFX, compared to other competing technologies such as Electron.
+
+=== No option to create a proper application bundle
+* Seems to be easy on macOS. It's just a tiny wrapper plus one icon.
+
+=== No option to create a platform installer bundle
+* Should be easy to do with jpackage. (VERIFY)
+

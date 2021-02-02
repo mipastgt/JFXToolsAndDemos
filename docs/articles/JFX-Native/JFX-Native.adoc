@@ -1,6 +1,6 @@
 = Building native, AOT compiled, real-world JavaFX applications
 Dr.-Ing. Michael Paus, mpMediaSoft GmbH
-Version 1.2.1, 2020-09-14
+Version 1.2.2, 2021-02-02
 :doctype: article
 :encoding: utf-8
 :lang: en
@@ -100,15 +100,19 @@ GraalVM `native-image` still has several limitations which may bite you in real-
 projects. So I strongly advise you to read the following document which
 summarizes most of these limitations.
 
-https://github.com/oracle/graal/blob/master/substratevm/LIMITATIONS.md
+https://github.com/oracle/graal/blob/master/substratevm/Limitations.md
 
 The ones I stumbled over most often where:
 
 * Reflection configuration (Everywhere)
-* Method Handles not supported (Log4J, NSMenuFX)
-* Serialization not supported (Disk cache)
+* Method Handles not supported (Log4J, NSMenuFX) +
+(This issue seems to be mostly fixed now but NSMenuFX still does not work for other reasons.)
+* Serialization not supported (Disk cache) +
+(This issue seems to be fixed with GraalVM 21.0.0)
 * Soft-References not working as expected (RAM cache) +
 (This issue seems to be fixed now: https://github.com/oracle/graal/issues/2145)
+* Only a single (default) locale
+* Media not supported on all platforms
 
 I'll go into more details in the following sections.
 
@@ -124,7 +128,7 @@ One way to make this task less tedious and error prone, is to use the tracing ag
 https://medium.com/graalvm/introducing-the-tracing-agent-simplifying-graalvm-native-image-configuration-c3b56c486271
 
 This agent collects relevant data by analyzing the software when executed via a standard
-Java virtual machine. It's a pitty though that the output of this agent cannot yet be integrated
+Java virtual machine. It's a pity though that the output of this agent cannot yet be integrated
 directly into the configuration of the client-maven-plugin.
 
 See: https://github.com/gluonhq/client-gradle-plugin/issues/25
