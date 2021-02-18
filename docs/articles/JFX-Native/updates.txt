@@ -12,6 +12,7 @@
 
 === Configuration too complicated and error prone
 * Integrate native image agent into workflow.
+  Seems to work perfectly well!
   (Does it conflict with the default config options?)
 
 === Native images far too big to be useful
