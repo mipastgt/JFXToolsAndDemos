@@ -9,13 +9,18 @@
 		<version>1.0.0</version>
 	</parent>
 	<artifactId>jfxtools-jarprocessor</artifactId>
+
+    <properties>
+        <mainClassName>de.mpmediasoft.jfxtools.jarprocessor.main.JARProcessorRunner</mainClassName>
+    </properties>
+
 	
     <build>
         <plugins>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
-                <version>1.6.0</version>
+                <version>${exec-maven-plugin.version}</version>
                 <executions>
                     <execution>
                         <goals>
@@ -24,9 +29,23 @@
                     </execution>
                 </executions>
 		        <configuration>
-		            <mainClass>de.mpmediasoft.jfxtools.jarprocessor.main.JARProcessorRunner</mainClass>
+		            <mainClass>${mainClassName}</mainClass>
 		        </configuration>
-            </plugin>                                   
+            </plugin>
+			<plugin>
+				<!-- Build an executable JAR -->
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>${maven-jar-plugin.version}</version>
+				<configuration>
+					<archive>
+						<manifest>
+							<mainClass>${mainClassName}</mainClass>
+						</manifest>
+					</archive>
+				</configuration>
+			</plugin>
+            
         </plugins>
     </build>
 
