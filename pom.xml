@@ -26,7 +26,7 @@
 		<jfxtools.version>1.0.0</jfxtools.version>		
         <pdfbox.version>2.0.17</pdfbox.version>     
         <openjdk.version>11</openjdk.version>
-        <openjfx.version>16-ea+6</openjfx.version>
+        <openjfx.version>17-ea+2</openjfx.version>
 	</properties>
 
 	<build>
@@ -94,6 +94,8 @@
 		<module>jfxtools-vlcjfx-demos</module>
 		<module>jfxtools-awtimage</module>
 		<module>jfxtools-awtimage-demos</module>
+		<module>jfxtools-skijacanvas</module>
+		<module>jfxtools-skijacanvas-demos</module>
 		<module>jfxtools-canvas</module>
 		<module>jfxtools-canvas-demos</module>
 	</modules>
