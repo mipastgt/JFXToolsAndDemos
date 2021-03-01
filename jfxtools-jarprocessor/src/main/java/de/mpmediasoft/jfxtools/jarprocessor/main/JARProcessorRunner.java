@@ -13,6 +13,7 @@ import de.mpmediasoft.jfxtools.jarprocessor.JARProcessor;
 import de.mpmediasoft.jfxtools.jarprocessor.JARProcessorException;
 import de.mpmediasoft.jfxtools.jarprocessor.processors.FXMLChecker;
 import de.mpmediasoft.jfxtools.jarprocessor.processors.ModuleChecker;
+import de.mpmediasoft.jfxtools.jarprocessor.processors.NativeArtifactChecker;
 
 public class JARProcessorRunner {
     
@@ -20,7 +21,8 @@ public class JARProcessorRunner {
     
     private static Map<String, JARProcessor> processorMap = Map.of(
         "ModuleChecker", new ModuleChecker(),
-        "FXMLChecker", new FXMLChecker()
+        "FXMLChecker", new FXMLChecker(),
+        "NativeArtifactChecker", new NativeArtifactChecker()
     );
     
     private boolean verbose = false;
@@ -70,7 +72,7 @@ public class JARProcessorRunner {
         ps.println("USAGE: <launcher command> <launcher options> <processor options> <list of jar files>");
         ps.println("  <launcher command> : Command suitable to launch the class JARProcessorRunner. (Depends on packaging.)");
         ps.println("  <launcher options> : Options for the launcher.");
-        ps.println("    ModuleChecker | FXMLChecker : Selects the processor.");
+        ps.println("    ModuleChecker | FXMLChecker | NativeArtifactChecker : Selects the processor.");
         ps.println("    -v : (optional) Makes the output verbose.");
         ps.println("  <processor options> : Options only valid for the selected processor.");
         ps.println("    -p|s|n : (only FXMLChecker) : Output format (P)lain, Maven (S)hade or Maven Gluon (N)ative.");

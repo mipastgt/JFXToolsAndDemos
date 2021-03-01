@@ -42,10 +42,27 @@ This is useful for tools like the maven shade plugin, ProGuard of GluonHQs
 client-maven-plugin for which you have to provide a list of all classes
 which have to be kept but which cannot be found by static analysis of the
 code.
+
 Example:
 
 ```
 mvn exec:java -pl jfxtools-jarprocessor -Dexec.args="FXMLChecker -v -n module1.jar module2.jar ..."
+```
+
+#### Native artifact checker
+
+This jar-processor analyzes a list of jar-files and lists all native artifacts
+contained in each file. All files which end with ".o", ".a", ".so", ".dll", ".dylib"
+or ".jnilib" are listed.
+
+This is useful to know if you want to strip unneeded files from a build or if you want
+to check if all native artifacts in your build have been properly signed. This is, e.g,
+necessary to get a bundled app notarized by Apple.
+
+Example:
+
+```
+mvn exec:java -pl jfxtools-jarprocessor -Dexec.args="NativeArtifactChecker -v module1.jar module2.jar ..."
 ```
 
 ### VLCJFXVideoPlayer
