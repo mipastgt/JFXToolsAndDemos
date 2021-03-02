@@ -94,8 +94,6 @@
 		<module>jfxtools-vlcjfx-demos</module>
 		<module>jfxtools-awtimage</module>
 		<module>jfxtools-awtimage-demos</module>
-		<module>jfxtools-skijacanvas</module>
-		<module>jfxtools-skijacanvas-demos</module>
 		<module>jfxtools-canvas</module>
 		<module>jfxtools-canvas-demos</module>
 	</modules>
