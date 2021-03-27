@@ -1,6 +1,6 @@
 = Building native, AOT compiled, real-world JavaFX applications
 Dr.-Ing. Michael Paus, mpMediaSoft GmbH
-Version 1.2.2, 2021-02-02
+Version 1.3.0, 2021-03-27
 :doctype: article
 :encoding: utf-8
 :lang: en
@@ -111,7 +111,9 @@ The ones I stumbled over most often where:
 (This issue seems to be fixed with GraalVM 21.0.0)
 * Soft-References not working as expected (RAM cache) +
 (This issue seems to be fixed now: https://github.com/oracle/graal/issues/2145)
-* Only a single (default) locale
+* Only a single (default) locale +
+(This issue is supposed to be fixed in version 21.1.0 (20. April 2021):
+https://github.com/oracle/graal/issues/911#issuecomment-745209431)
 * Media not supported on all platforms
 
 I'll go into more details in the following sections.
@@ -132,6 +134,8 @@ Java virtual machine. It's a pity though that the output of this agent cannot ye
 directly into the configuration of the client-maven-plugin.
 
 See: https://github.com/gluonhq/client-gradle-plugin/issues/25
+
+(This issue seems to be mostly fixed now because you can use the tracing agent via the client-maven-plugin.)
 
 === Resources
 
@@ -243,6 +247,9 @@ adhere to the conventions of your chosen built-in locale.
 
 See: https://github.com/oracle/graal/issues/2141
 
+(This issue is supposed to be fixed in version 21.1.0 (20. April 2021):
+https://github.com/oracle/graal/issues/911#issuecomment-745209431)
+
 == JavaFX/Substrate limitations and issues
 
 The JavaFX part of the native image creation currently also has some limitations.
@@ -283,6 +290,8 @@ if I use the Maven shade plugin with the option minimizeJar switched on.
 If jlink would put a bit more effort into it, the size of the .app bundle could even be
 further reduced substantially by more selectively loading code and resources and not just
 doing so on a whole module basis.
+
+(This issue can be solved via UPX. See: https://upx.github.io/)
 
 === Performance
 
@@ -385,6 +394,8 @@ no proxy list support.
 Until now I have not found a solution for this and thus cannot read or write any XML files in my real software,
 which limits its usability quite a bit.
 
+(This issue seems to be mostly fixed now because you can use the tracing agent via the client-maven-plugin.)
+
 == Java VM vs. GraalVM/native-image comparison
 
 This is a subjective comparison of a standard Java VM (Oracle OpenJDK 14 EA)
@@ -422,7 +433,7 @@ Client-Maven-Plugin).
 
 |Bundle size
 |0
-|-
+|- (pure), + (with UPX)
 |===
 
 Some remarks on the table:
@@ -435,7 +446,7 @@ Some remarks on the table:
 Taking all this into account, the real driver to use GraalVM/native-image is the promise that
 it will allow the use of the latest standard Java/JavaFX on mobile devices too and thus make
 it possible to cover the mobile, embedded and desktop sector with a single code base.
-For a pure desktop environment it does not make much sense.
+For a pure desktop environment its usefulness is currently still questionable due to various limitations and the development overhead, but we are making progress.
 
 == Conclusion
 
