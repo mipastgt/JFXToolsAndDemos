@@ -250,6 +250,20 @@ See: https://github.com/oracle/graal/issues/2141
 (This issue is supposed to be fixed in version 21.1.0 (20. April 2021):
 https://github.com/oracle/graal/issues/911#issuecomment-745209431)
 
+=== Media not supported on all platforms
+
+Saving images via javafx.embed.swing.SwingFXUtils.fromFXImage(SwingFXUtils.java:284)
+does not seem to work. +
+https://github.com/oracle/graal/issues/2842#issuecomment-808720795
+
+Playing audio clips also does not seem to work. Although the code compiled without problem
+and the AudioClip was instantiated directly without any reflection magic I got the following
+exception at runtime.
+....
+Exception in thread "JavaFX Application Thread" java.lang.NoClassDefFoundError: javafx.scene.media.AudioClip
+....
+
+
 == JavaFX/Substrate limitations and issues
 
 The JavaFX part of the native image creation currently also has some limitations.
