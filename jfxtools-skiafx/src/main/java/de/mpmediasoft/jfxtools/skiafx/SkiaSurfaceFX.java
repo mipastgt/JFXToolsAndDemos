@@ -23,7 +23,7 @@ import javafx.util.Callback;
  * The rendering result is made directly available in an image via
  * a PixelBuffer.
  * 
- * @author mpaus
+ * @author Michael Paus
  */
 public class SkiaSurfaceFX {
     
@@ -41,6 +41,14 @@ public class SkiaSurfaceFX {
     
     private final Surface surface;
     
+    /**
+     * Generates a raster Skia surface.<br>
+     * Note: Skia does not do any automatic scaling for Retina or HighDPI screens
+     * like the JavaFX canvas does. The user has to take care of that manually.
+     * 
+     * @param width the width in pixels.
+     * @param height the height in pixels.
+     */
     public SkiaSurfaceFX(int width, int height) {
         try {
             byteBuffer = ByteBuffer.allocateDirect(width * height * 4);
@@ -52,22 +60,49 @@ public class SkiaSurfaceFX {
         }
     }
     
+    /**
+     * Get the byte buffer if you need it.
+     * 
+     * @return the byte buffer.
+     */
     public ByteBuffer getByteBuffer() {
         return byteBuffer;
     }
 
+    /**
+     * Get the pixel buffer if you need it.
+     * 
+     * @return the pixel buffer.
+     */
     public PixelBuffer<IntBuffer> getPixelBuffer() {
         return pixelBuffer;
     }
 
+    /**
+     * Get the image the Canvas is rendering to.
+     * 
+     * @return the image.
+     */
     public Image getImage() {
         return image;
     }
     
+    /**
+     * Get the Skija Surface if you need it.
+     * 
+     * @return the Skija Surface.
+     */
     public Surface getSurface() {
         return surface;
     }
     
+    /**
+     * Render something into the Canvas of this Surface.
+     * You have to provide a Callback which takes a Canvas and returns a JavaFX
+     * Rectangle2D or null. See the PixelBuffer.updateBuffer method for more details.
+     * 
+     * @param renderer the renderer Callback.
+     */
     public void render(RenderCallback renderer) {
         pixelBuffer.updateBuffer(pb -> renderer.call(surface.getCanvas()));
     }
