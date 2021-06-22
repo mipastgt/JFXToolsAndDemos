@@ -163,6 +163,19 @@ of the [Skija](https://github.com/JetBrains/skija) java bindings provided by Jet
 
 ![Demo1](jfxtools-skiafx-demos/demo1.png "SkiaSurfaceFXDemo1")
 
+What might this be good for? Primarily it is just a proof of concept but ...
+* Skia serves as the graphics engine for Google Chrome and Chrome OS, Android, Flutter, Mozilla Firefox
+  and Firefox OS, Jetbrains Compose and many other products. So the Skia integration might help to
+  make code written for Skia on these platforms easily available to JavaFX.
+* The Skia Canvas has a few features which you don't find in the JavaFX Canvas.
+* Its a real immediate mode renderer which is an advantage in some situations.
+* You can render on multiple threads which is an advantage, e.g., for offscreen rendering.
+* In JavaFX you have to take a snapshot of a Canvas if you need an image of your rendering.
+  Here it is readily available.
+* Once you have code written for the Skia Canvas you can also use other render targets than Raster, e.g.,
+  OpenGL, PDF, XPS, SVG and Picture (for recording and then playing back into another Canvas)
+  
+
 #### Run
 
 From the top-level project directory call:
