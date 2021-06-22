@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<project
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>de.mpmediasoft</groupId>
+		<artifactId>jfxtools</artifactId>
+		<version>1.0.0</version>
+	</parent>
+	<artifactId>jfxtools-skiafx</artifactId>
+
+    <profiles>
+        <profile>
+            <id>build-mac</id>
+            <activation>
+                <os><family>mac</family></os>
+            </activation>
+            <properties>
+                <skija.platform>macos-x64</skija.platform> <!-- macos-x64, macos-arm64, linux, windows -->
+            </properties>
+        </profile>
+        <profile>
+            <id>build-linux</id>
+            <activation>
+                <os><family>linux</family></os>
+            </activation>
+            <properties>
+                <skija.platform>linux</skija.platform> <!-- macos-x64, macos-arm64, linux, windows -->
+            </properties>
+        </profile>
+        <profile>
+            <id>build-windows</id>
+            <activation>
+                <os><family>windows</family></os>
+            </activation>
+            <properties>
+                <skija.platform>windows</skija.platform> <!-- macos-x64, macos-arm64, linux, windows -->
+            </properties>
+        </profile>
+    </profiles>
+
+    <repositories>
+      <repository>
+        <id>space-maven</id>
+        <url>https://packages.jetbrains.team/maven/p/skija/maven</url>
+      </repository>
+    </repositories>
+    
+    <dependencies>
+        <dependency>
+            <groupId>org.jetbrains.skija</groupId>
+            <artifactId>skija-${skija.platform}</artifactId>
+            <version>0.92.11</version>
+        </dependency>
+    </dependencies>
+
+</project>

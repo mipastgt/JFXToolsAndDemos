@@ -96,6 +96,8 @@
 		<module>jfxtools-awtimage-demos</module>
 		<module>jfxtools-canvas</module>
 		<module>jfxtools-canvas-demos</module>
+		<module>jfxtools-skiafx</module>
+		<module>jfxtools-skiafx-demos</module>
 	</modules>
 
 </project>

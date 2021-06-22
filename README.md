@@ -153,3 +153,21 @@ From the top-level project directory call:
 mvn -pl jfxtools-canvas-demos exec:exec
 ```
 
+### SkiaSurfaceFX
+
+This is a simple example of a wrapper for the Skia rendering engine. It uses the new WritableImage
+of JavaFX 13 with support for Buffers to improve performance. The idea is to let [Skia](https://skia.org/)
+directly render into this buffer and use the image directly in an ImageView without any explicit rendering
+into a canvas or such thing. Only this brings the desired performance boost. This code makes use
+of the [Skija](https://github.com/JetBrains/skija) java bindings provided by JetBrains.
+
+#### Run
+
+From the top-level project directory call:
+
+```
+mvn exec:java@SkiaSurfaceFXDemo1 -pl jfxtools-skiafx-demos
+```
+
+
+
