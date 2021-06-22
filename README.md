@@ -161,6 +161,8 @@ directly render into this buffer and use the image directly in an ImageView with
 into a canvas or such thing. Only this brings the desired performance boost. This code makes use
 of the [Skija](https://github.com/JetBrains/skija) java bindings provided by JetBrains.
 
+![Demo1](jfxtools-skiafx-demos/demo1.png "SkiaSurfaceFXDemo1")
+
 #### Run
 
 From the top-level project directory call:
