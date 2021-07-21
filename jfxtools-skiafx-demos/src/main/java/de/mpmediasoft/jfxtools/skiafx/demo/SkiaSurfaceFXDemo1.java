@@ -75,6 +75,7 @@ public class SkiaSurfaceFXDemo1 extends Application {
     
     private float[] intervals = new float[] {20.0f, 10.0f, 4.0f, 10.0f};
 
+    @SuppressWarnings("resource")
     private RenderCallback[] demos = new RenderCallback[] {
         canvas -> { // Demo 0
             canvas.clear(0xFFD0FFD0);
