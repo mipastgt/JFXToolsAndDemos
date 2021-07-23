@@ -69,6 +69,14 @@
 			</plugin>
 		</plugins>
 	</build>
+
+	<distributionManagement>
+		<repository>
+			<id>github</id>
+			<name>GitHub mipastgt Apache Maven Packages</name>
+			<url>https://maven.pkg.github.com/mipastgt/JFXToolsAndDemos</url>
+		</repository>
+	</distributionManagement>
 	
 	<dependencies>
 		<dependency>
