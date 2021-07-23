@@ -3,7 +3,7 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Maven Package](https://github.com/mipastgt/JFXToolsAndDemos/actions/workflows/maven-publish.yml/badge.svg)](https://github.com/mipastgt/JFXToolsAndDemos/actions/workflows/maven-publish.yml)
 
-A collection of tools and demos for JavaFX.
+A collection of tools and demos for JavaFX. (Now with SNAPSHOT packages)
 
 ## Build
 
