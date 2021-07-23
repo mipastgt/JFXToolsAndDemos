@@ -1,5 +1,7 @@
 # JFXToolsAndDemos
 
+[![Maven Package](https://github.com/mipastgt/JFXToolsAndDemos/actions/workflows/maven-publish.yml/badge.svg)](https://github.com/mipastgt/JFXToolsAndDemos/actions/workflows/maven-publish.yml)
+
 A collection of tools and demos for JavaFX.
 
 ## Build
