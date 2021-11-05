@@ -9,14 +9,16 @@ Version 1.0.0, 2021-01-23
 :ext-relative: .html
 
 [.lead]
-Articles about various topics, mostly related to Java, JavaFX and GraalVM/Native-image.
+Articles about various software and aviation topics. The software articles are mostly related to Java, JavaFX and GraalVM/Native-image as well as Kotlin and Jetpack Compose. The aviation topics are about using the software in the air.
 
 [NOTE]
 ====
 Scroll down for the latest articles.
 ====
 
-== Building native, AOT compiled, real-world JavaFX applications
+== Software
+
+=== Building native, AOT compiled, real-world JavaFX applications
 
 A summary of my lessons learned converting an existing JavaFX application to a native,
 AOT compiled, real-world application using the Gluon Client Maven plugin which is based
@@ -24,17 +26,25 @@ on the GraalVM `native-image` toolchain.
 
 link:JFX-Native/JFX-Native{ext-relative}[Building native, AOT compiled, real-world JavaFX applications]
 
-== Bundling real-world JavaFX applications
+=== Bundling real-world JavaFX applications
 
 A summary of my lessons learned bundling real-world JavaFX application with
 various different techniques.
 
 link:JFX-Bundles/JFX-Bundles{ext-relative}[Bundling real-world JavaFX applications]
 
-== JavaFX on Android
+=== JavaFX on Android
 
 A summary of my lessons learned building a first, still simple, pure JavaFX Android
 application based on the components of an already existing JavaFX application using
 the Gluon Client Maven plugin which is based on the GraalVM `native-image` toolchain.
 
 link:JFX-Android/JFX-Android{ext-relative}[JavaFX on Android]
+
+== Aviation
+
+=== Flight testing standard mobile cellular phone network technology in the lower airspace
+
+Flight test on 24.10.2021 in Hermuthausen to investigate the performance of standard mobile cellular phone network technology in the lower airspace.
+
+link:https://mpmediasoft.de/articles/FlightTest20211024/FlightTest20211024.html[Flight test 2021 in Hermuthausen]
