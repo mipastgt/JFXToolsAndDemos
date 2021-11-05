@@ -109,7 +109,7 @@ public class SkiaSurfaceFX {
     
     private final long getBufferPointer(ByteBuffer byteBuffer) throws Exception {
 //        if (AVOID_ILLEGAL_REFLECTION) {
-//            return MemorySegment.ofByteBuffer(byteBuffer).baseAddress().toRawLongValue();
+//            return MemorySegment.ofByteBuffer(byteBuffer).address().toRawLongValue();
 //        } else {        
             Field address = Buffer.class.getDeclaredField("address");
             address.setAccessible(true);
