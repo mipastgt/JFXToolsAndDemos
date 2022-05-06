@@ -47,4 +47,4 @@ link:JFX-Android/JFX-Android{ext-relative}[JavaFX on Android]
 
 Flight test on 24.10.2021 in Hermuthausen to investigate the performance of standard mobile cellular phone network technology in the lower airspace.
 
-link:https://mpmediasoft.de/articles/FlightTest20211024/FlightTest20211024.html[Flight test 2021 in Hermuthausen]
+link:https://mpmediasoft.de/articles/FlightTest20211024/FlightTest20211024.html[Performance of standard mobile cellular phone network technology in the lower airspace]
