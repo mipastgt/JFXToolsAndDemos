@@ -26,7 +26,7 @@
 		<jfxtools.version>1.0.0-SNAPSHOT</jfxtools.version>		
         <pdfbox.version>2.0.17</pdfbox.version>     
         <openjdk.version>11</openjdk.version>
-        <openjfx.version>20-ea+4</openjfx.version>
+        <openjfx.version>20-ea+6</openjfx.version>
 	</properties>
 
 	<build>
