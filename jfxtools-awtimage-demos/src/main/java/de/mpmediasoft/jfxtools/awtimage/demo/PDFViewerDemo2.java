@@ -10,6 +10,7 @@ import java.util.Locale;
 
 import javax.imageio.ImageIO;
 
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
@@ -139,7 +140,8 @@ public class PDFViewerDemo2 extends Application {
         try {
             if (pdfFile != null && pdfFile.canRead()) {
                 if (document != null) document.close();
-                document = PDDocument.load(pdfFile);
+                document = Loader.loadPDF(pdfFile); // Version 3.0.x
+//              document = PDDocument.load(pdfFile); // Version 2.0.x
                 pdfRenderer = new PDFRenderer(document);
                 pdfRenderer.setSubsamplingAllowed(true);
                 

@@ -69,5 +69,11 @@
 			<artifactId>pdfbox</artifactId>
 			<version>${pdfbox.version}</version>
 		</dependency>
+		
+		<dependency>
+            <groupId>org.apache.pdfbox</groupId>
+            <artifactId>io</artifactId>
+            <version>${pdfbox-io.version}</version>
+        </dependency>
 	</dependencies>
 </project>
