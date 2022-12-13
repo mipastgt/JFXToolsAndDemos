@@ -27,7 +27,7 @@
         <pdfbox.version>3.0.0-RC1</pdfbox.version>
         <pdfbox-io.version>3.0.0-alpha3</pdfbox-io.version>           
         <openjdk.version>17</openjdk.version>
-        <openjfx.version>20-ea+9</openjfx.version>
+        <openjfx.version>20-ea+11</openjfx.version>
 	</properties>
 
 	<build>
