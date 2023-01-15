@@ -163,7 +163,7 @@ This is a simple example of a wrapper for the Skia rendering engine. It uses the
 of JavaFX 13 with support for Buffers to improve performance. The idea is to let [Skia](https://skia.org/)
 directly render into this buffer and use the image directly in an ImageView without any explicit rendering
 into a canvas or such thing. Only this brings the desired performance boost. This code makes use
-of the [Skija](https://github.com/JetBrains/skija) java bindings provided by JetBrains.
+of the [Skija](https://github.com/HumbleUI/Skija) java bindings originally provided by JetBrains.
 
 ![Demo1](jfxtools-skiafx-demos/demo1.png "SkiaSurfaceFXDemo1")
 
@@ -185,7 +185,7 @@ What might this be good for? Primarily it is just a proof of concept but ...
 From the top-level project directory call:
 
 ```
-mvn exec:java@SkiaSurfaceFXDemo1 -pl jfxtools-skiafx-demos
+mvn -pl jfxtools-skiafx-demos exec:exec
 ```
 
 

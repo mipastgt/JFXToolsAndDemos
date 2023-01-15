@@ -17,7 +17,7 @@
                 <os><family>mac</family></os>
             </activation>
             <properties>
-                <skija.platform>macos-x64</skija.platform> <!-- macos-x64, macos-arm64, linux, windows -->
+                <skija.platform>macos-x64</skija.platform> <!-- macos-x64, macos-arm64, linux-x64, windows-x64 -->
             </properties>
         </profile>
         <profile>
@@ -26,7 +26,7 @@
                 <os><family>linux</family></os>
             </activation>
             <properties>
-                <skija.platform>linux</skija.platform> <!-- macos-x64, macos-arm64, linux, windows -->
+                <skija.platform>linux-x64</skija.platform> <!-- macos-x64, macos-arm64, linux-x64, windows-x64 -->
             </properties>
         </profile>
         <profile>
@@ -35,23 +35,16 @@
                 <os><family>windows</family></os>
             </activation>
             <properties>
-                <skija.platform>windows</skija.platform> <!-- macos-x64, macos-arm64, linux, windows -->
+                <skija.platform>windows-x64</skija.platform> <!-- macos-x64, macos-arm64, linux-x64, windows-x64 -->
             </properties>
         </profile>
     </profiles>
 
-    <repositories>
-      <repository>
-        <id>space-maven</id>
-        <url>https://packages.jetbrains.team/maven/p/skija/maven</url>
-      </repository>
-    </repositories>
-    
     <dependencies>
         <dependency>
-            <groupId>org.jetbrains.skija</groupId>
+            <groupId>io.github.humbleui</groupId>
             <artifactId>skija-${skija.platform}</artifactId>
-            <version>0.93.1</version>
+            <version>0.109.1</version>
         </dependency>
     </dependencies>
 

@@ -3,13 +3,13 @@ package de.mpmediasoft.jfxtools.skiafx.demo;
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
 
-import org.jetbrains.skija.Color;
-import org.jetbrains.skija.Paint;
-import org.jetbrains.skija.PaintMode;
-import org.jetbrains.skija.Path;
-import org.jetbrains.skija.PathEffect;
-import org.jetbrains.skija.Point;
-import org.jetbrains.skija.Shader;
+import io.github.humbleui.skija.Color;
+import io.github.humbleui.skija.Paint;
+import io.github.humbleui.skija.PaintMode;
+import io.github.humbleui.skija.Path;
+import io.github.humbleui.skija.PathEffect;
+import io.github.humbleui.types.Point;
+import io.github.humbleui.skija.Shader;
 
 import de.mpmediasoft.jfxtools.skiafx.SkiaSurfaceFX;
 import de.mpmediasoft.jfxtools.skiafx.SkiaSurfaceFX.RenderCallback;

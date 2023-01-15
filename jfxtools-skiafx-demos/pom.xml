@@ -15,18 +15,24 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
-                <version>1.6.0</version>
+                <version>${exec-maven-plugin.version}</version>
                 <executions>
                     <execution>
-                        <id>SkiaSurfaceFXDemo1</id>
                         <goals>
-                            <goal>java</goal>
+                            <goal>exec</goal>
                         </goals>
-                        <configuration>
-                            <mainClass>de.mpmediasoft.jfxtools.skiafx.demo.SkiaSurfaceFXDemo1Launcher</mainClass>                            
-                        </configuration>
                     </execution>
                 </executions>
+                <configuration>
+                    <executable>java</executable>
+                    <arguments>
+                        <argument>-classpath</argument>
+                        <classpath/>
+                        <argument>-ea</argument>
+                        <argument>--add-modules=jdk.incubator.foreign</argument>
+                        <argument>de.mpmediasoft.jfxtools.skiafx.demo.SkiaSurfaceFXDemo1Launcher</argument>
+                    </arguments>
+                </configuration>     
             </plugin>                                   
 		</plugins>
 	</build>
@@ -38,4 +44,5 @@
 			<version>${jfxtools.version}</version>
 		</dependency>    
 	</dependencies>
+	
 </project>

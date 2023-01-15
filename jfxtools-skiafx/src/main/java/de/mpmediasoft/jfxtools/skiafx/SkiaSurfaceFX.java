@@ -5,9 +5,9 @@ import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
-import org.jetbrains.skija.Canvas;
-import org.jetbrains.skija.ImageInfo;
-import org.jetbrains.skija.Surface;
+import io.github.humbleui.skija.Canvas;
+import io.github.humbleui.skija.ImageInfo;
+import io.github.humbleui.skija.Surface;
 
 import javafx.geometry.Rectangle2D;
 import javafx.scene.image.Image;
@@ -15,7 +15,7 @@ import javafx.scene.image.PixelBuffer;
 import javafx.scene.image.PixelFormat;
 import javafx.scene.image.WritableImage;
 import javafx.util.Callback;
-//import jdk.incubator.foreign.MemorySegment;
+import jdk.incubator.foreign.MemorySegment;
 
 /**
  * A JavaFX wrapper class for a Skia Surface.
@@ -29,7 +29,7 @@ public class SkiaSurfaceFX {
     
     // Uses the "Foreign Memory Access API" introduced in Java 14.
     // Needs --add-modules=jdk.incubator.foreign on the command line if set to true!
-//    private final static boolean AVOID_ILLEGAL_REFLECTION = false;
+    private final static boolean AVOID_ILLEGAL_REFLECTION = true;
     
     public static interface RenderCallback extends Callback<Canvas,Rectangle2D> {}
     
@@ -108,13 +108,13 @@ public class SkiaSurfaceFX {
     }
     
     private final long getBufferPointer(ByteBuffer byteBuffer) throws Exception {
-//        if (AVOID_ILLEGAL_REFLECTION) {
-//            return MemorySegment.ofByteBuffer(byteBuffer).address().toRawLongValue();
-//        } else {        
+        if (AVOID_ILLEGAL_REFLECTION) {
+            return MemorySegment.ofByteBuffer(byteBuffer).address().toRawLongValue();
+        } else {        
             Field address = Buffer.class.getDeclaredField("address");
             address.setAccessible(true);
             return address.getLong(byteBuffer);
-//        }
+        }
     }
     
 }
