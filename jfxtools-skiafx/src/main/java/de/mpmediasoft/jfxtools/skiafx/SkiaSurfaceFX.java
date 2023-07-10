@@ -1,6 +1,8 @@
 package de.mpmediasoft.jfxtools.skiafx;
 
-import java.lang.foreign.MemorySegment;
+import java.lang.foreign.MemorySegment; // new
+//import jdk.incubator.foreign.MemorySegment; // old
+
 import java.lang.reflect.Field;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
@@ -16,7 +18,6 @@ import javafx.scene.image.PixelBuffer;
 import javafx.scene.image.PixelFormat;
 import javafx.scene.image.WritableImage;
 import javafx.util.Callback;
-//import jdk.incubator.foreign.MemorySegment;
 
 /**
  * A JavaFX wrapper class for a Skia Surface.
@@ -30,7 +31,7 @@ public class SkiaSurfaceFX {
     
     // Uses the "Foreign Memory Access API" introduced in Java 14.
     // Needs --add-modules=jdk.incubator.foreign on the command line if set to true!
-    private final static boolean AVOID_ILLEGAL_REFLECTION = true;
+    private final static boolean AVOID_ILLEGAL_REFLECTION = false;
     
     public static interface RenderCallback extends Callback<Canvas,Rectangle2D> {}
     
@@ -110,7 +111,8 @@ public class SkiaSurfaceFX {
     
     private final long getBufferPointer(ByteBuffer byteBuffer) throws Exception {
         if (AVOID_ILLEGAL_REFLECTION) {
-            return MemorySegment.ofBuffer(byteBuffer).address().toRawLongValue();
+//          return MemorySegment.ofByteBuffer(byteBuffer).address().toRawLongValue();   // old
+            return MemorySegment.ofBuffer(byteBuffer).address().toRawLongValue();       // new
         } else {        
             Field address = Buffer.class.getDeclaredField("address");
             address.setAccessible(true);
