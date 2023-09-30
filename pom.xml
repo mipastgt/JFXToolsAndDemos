@@ -26,8 +26,8 @@
 		<jfxtools.version>1.0.0-SNAPSHOT</jfxtools.version>		
         <pdfbox.version>3.0.0-RC1</pdfbox.version>
         <pdfbox-io.version>3.0.0-alpha3</pdfbox-io.version>           
-        <openjdk.version>17</openjdk.version>
-        <openjfx.version>21</openjfx.version>
+        <openjdk.version>21</openjdk.version>
+        <openjfx.version>22-ea+11</openjfx.version>
 	</properties>
 
 	<build>
@@ -41,10 +41,8 @@
 					<fork>false</fork>
 					<source>${openjdk.version}</source>
 					<target>${openjdk.version}</target>
-                    <compilerArgs>
-                        <arg>--add-modules=jdk.incubator.foreign</arg>
-                    </compilerArgs>
-			    </configuration>
+                    <enablePreview>true</enablePreview>
+    			    </configuration>
 			</plugin>
 			<plugin>
 		        <groupId>org.apache.maven.plugins</groupId>

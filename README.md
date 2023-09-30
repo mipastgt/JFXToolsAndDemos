@@ -8,6 +8,8 @@ A collection of tools and demos for JavaFX. (Now with SNAPSHOT packages)
 
 ## Build
 
+Attention: The current setup requires that you set JAVA_HOME to some Java 21 JDK or later!
+
 From the top-level project directory call:
 
 ```

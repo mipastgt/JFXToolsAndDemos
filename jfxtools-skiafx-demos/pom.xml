@@ -24,13 +24,13 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <executable>java</executable>
+                    <executable>${JAVA_HOME}/bin/java</executable>
                     <arguments>
                         <argument>-classpath</argument>
                         <classpath/>
                         <argument>-ea</argument>
+                        <argument>--enable-preview</argument>
                         <argument>--add-opens=java.base/java.nio=ALL-UNNAMED</argument>
-                        <argument>--add-modules=jdk.incubator.foreign</argument>
                         <argument>de.mpmediasoft.jfxtools.skiafx.demo.SkiaSurfaceFXDemo1Launcher</argument>
                     </arguments>
                 </configuration>     
